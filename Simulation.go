@@ -13,8 +13,6 @@ package main
 import (
 	"image/color"
 	"log"
-	"math/rand"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -26,6 +24,8 @@ type Game struct{}
 // Updates Logical side of the game
 // (g *Game) -> receiver type works like object method in java so Game.Update()
 func (g *Game) Update() error {
+	//var fish []Fish
+
 	return nil
 }
 
@@ -41,32 +41,24 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return 320, 240
 }
 
-type Fish struct {
+////////////////////////////
+
+type Grid struct {
+	// Value 0 in position = empty
+	// Value 1 in poistion = fish
+	// Value 2 in position = shark
+	locations [320][240]float32
+}
+type Position struct {
 	xPosition float32
 	yPosition float32
 }
-
-/**
- * @brief Generates Random Direction
- *
- * This function takes an array of available directions so 0-N, 1-E, 2-S, 3-W
- * randomly chooses one of them and returns one of these values as an int
- *
- * @param an array of available directions.
- * @return an random int from given array.
- */
-func genRadomPosition(array []int) int {
-	rand.NewSource(time.Now().UnixNano()) // Generates random seed
-	randomAnswer := array[rand.Intn(len(array))]
-	return randomAnswer
+type Fish struct {
+	position Position
 }
 
-func checkAvailablePositions(postions float32) (checkAvailablePositions []float32) {
-
-}
-
-func fish() {
-
+type Shark struct {
+	position Position
 }
 
 func main() {
