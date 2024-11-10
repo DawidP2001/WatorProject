@@ -4,7 +4,7 @@
 // Description:
 // A solution to the dinining philosophers problem
 // Issues:
-// 1. Fish Priorities going north - found in updateFish function
+// 1.
 // ToDO:
 // 1. Fish Reproduction - Semi Complete
 // 2. add Sharks

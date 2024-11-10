@@ -16,8 +16,8 @@ type Game struct {
 	starve     int     // Period of time a shark can go without food before dying;
 	gridSize   [][]int // Dimensions of world
 
-	fishSlice  []Fish
-	sharkSlice []Shark
+	fishSlice  []*Fish
+	sharkSlice []*Shark
 }
 
 func NewGame(numShark int, numFish int, fishBreed int, sharkBreed int, starve int, gridSize [][]int) *Game {
@@ -49,19 +49,7 @@ func (g *Game) updateFish(maxX int, maxY int) {
 	if len(g.fishSlice) > 0 {
 		for i := len(g.fishSlice) - 1; i >= 0; i-- {
 			currentFish := g.fishSlice[i]
-			currentFish.setNewPosition(g, currentFish.x, currentFish.y, maxX, maxY)
-		}
-	}
-}
-func (g *Game) updateFishTest() {
-	for i := 319; i >= 0; i-- {
-		for j := 239; j >= 0; j-- {
-			if g.grid.locations[i][j].species == 1 {
-				if !g.grid.locations[i][j].moved {
-					fish := g.grid.locations[i][j].fish
-					fish.setNewPosition(g, i, j, 320, 240)
-				}
-			}
+			currentFish.setNewPosition(g, maxX, maxY)
 		}
 	}
 }
