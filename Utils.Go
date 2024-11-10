@@ -7,6 +7,7 @@ import (
 
 type Seacreature struct {
 	species int
+	moved   bool
 	fish    Fish
 	shark   Shark
 }

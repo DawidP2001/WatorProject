@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -16,15 +17,40 @@ func NewGame() *Game {
 	}
 	s := Seacreature{
 		species: 1,
+		fish:    *newFish(),
 	}
-	g.grid.locations[100][100] = s
+	g.grid.locations[100][200] = s
 	return g
 }
 
 // Updates Logical side of the game
 func (g *Game) Update() error {
-
+	g.grid.resetMovedPositions()
+	g.updateFish()
+	time.Sleep(1 * time.Second)
 	return nil
+}
+func (g *Game) updateFish() {
+	for i := 0; i < len(g.grid.locations); i++ {
+		for j := 0; j < len(g.grid.locations[i]); j++ {
+			if g.grid.locations[i][j].species == 1 {
+				g.grid.locations[i][j].moved = true
+				xPosition, yPoistion := g.grid.locations[i][j].fish.fishNextPosition(i, j)
+				g.grid.locations[xPosition][yPoistion] = g.grid.locations[i][j]
+				g.grid.locations[i][j].species = 0
+
+			}
+		}
+	}
+}
+func (grid *Grid) resetMovedPositions() {
+	for i := 0; i < len(grid.locations); i++ {
+		for j := 0; j < len(grid.locations[i]); j++ {
+			if grid.locations[i][j].species == 1 {
+				grid.locations[i][j].moved = false
+			}
+		}
+	}
 }
 
 // Draws the screen
