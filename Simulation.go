@@ -6,19 +6,74 @@
 // Issues:
 // None I hope
 //--------------------------------------------
+// Note: A lot of the comments were placed while I was learning more about the language
 
 package main
 
-func runSim() {
-	// Chronons pass
+import (
+	"image/color"
+	"log"
+	"math/rand"
+	"time"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+)
+
+type Game struct{}
+
+// Updates Logical side of the game
+// (g *Game) -> receiver type works like object method in java so Game.Update()
+func (g *Game) Update() error {
+	return nil
+}
+
+// Draws the screen
+func (g *Game) Draw(screen *ebiten.Image) {
+	vector.StrokeLine(screen, 10, 10, 320, 240, 10, color.White, true)
+	ebitenutil.DebugPrint(screen, "Hello, Worsld!")
+}
+
+// The game has inner logical screen size which is set to 320x and 240y
+// Resizing the window won't change this logic
+func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return 320, 240
+}
+
+type Fish struct {
+	xPosition float32
+	yPosition float32
+}
+
+/**
+ * @brief Generates Random Direction
+ *
+ * This function takes an array of available directions so 0-N, 1-E, 2-S, 3-W
+ * randomly chooses one of them and returns one of these values as an int
+ *
+ * @param an array of available directions.
+ * @return an random int from given array.
+ */
+func genRadomPosition(array []int) int {
+	rand.NewSource(time.Now().UnixNano()) // Generates random seed
+	randomAnswer := array[rand.Intn(len(array))]
+	return randomAnswer
+}
+
+func checkAvailablePositions(postions float32) (checkAvailablePositions []float32) {
+
+}
+
+func fish() {
+
 }
 
 func main() {
-	numShark := 0   // Starting population of sharks
-	numFish := 0    // Starting population of fish
-	fishBreed := 0  // Number of time units that pass before a fish can reproduce
-	sharkBreed := 0 // Number of time units that must pass before a shark can reproduce;
-	starve := 0     // Period of time a shark can go without food before dying;
-	gridSize := 0   // Dimensions of world
-	threads := 0    // number of threads to use
+	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowTitle("Hello, World!")
+	ebiten.SetTPS(30)
+	if err := ebiten.RunGame(&Game{}); err != nil {
+		log.Fatal(err)
+	}
 }
