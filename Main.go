@@ -4,7 +4,7 @@
 // Description:
 // A solution to the dinining philosophers problem
 // Issues:
-// None I hope
+// 1. Fish Priorities going north - found in updateFish function
 // ToDO:
 // 1. Fish Reproduction
 // 2. add Sharks
@@ -24,10 +24,10 @@ import (
 )
 
 func main() {
-	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
-	g := NewGame()
+	g := NewGame(0, 0, 10, 0, 0, nil)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

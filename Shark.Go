@@ -1,5 +1,5 @@
 package main
 
 type Shark struct {
-	position Position
+	lastEaten int // Stores the chronon at which the shark ate last time
 }
