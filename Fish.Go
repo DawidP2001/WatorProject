@@ -1,6 +1,8 @@
 package main
 
 type Fish struct {
+	x int
+	y int
 }
 
 func newFish() *Fish {

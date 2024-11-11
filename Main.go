@@ -15,6 +15,9 @@
 //--------------------------------------------
 // Note: A lot of the comments were placed while I was learning more about the language
 
+// Idea to fix the issue in this branch
+// 1. Create fish array and itterate through that array to update positions instead of the nested for loop
+
 package main
 
 import (

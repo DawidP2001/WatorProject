@@ -15,6 +15,9 @@ type Game struct {
 	sharkBreed int     // Number of time units that must pass before a shark can reproduce;
 	starve     int     // Period of time a shark can go without food before dying;
 	gridSize   [][]int // Dimensions of world
+
+	fishSlice  []Fish
+	sharkSlice []Shark
 }
 
 func NewGame(numShark int, numFish int, fishBreed int, sharkBreed int, starve int, gridSize [][]int) *Game {
