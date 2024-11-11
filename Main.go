@@ -5,6 +5,13 @@
 // A solution to the dinining philosophers problem
 // Issues:
 // None I hope
+// ToDO:
+// 1. Fish Reproduction
+// 2. add Sharks
+// 3. Starvation
+// 4. shark Reproduction
+// 5. Add dimensionality
+// 6. Add threads
 //--------------------------------------------
 // Note: A lot of the comments were placed while I was learning more about the language
 

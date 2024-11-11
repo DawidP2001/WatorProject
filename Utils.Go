@@ -11,12 +11,7 @@ type Seacreature struct {
 	fish    Fish
 	shark   Shark
 }
-type Grid struct {
-	// Value 0 in position = empty
-	// Value 1 in poistion = fish
-	// Value 2 in position = shark
-	locations [320][240]Seacreature
-}
+
 type Position struct {
 	xPosition float32
 	yPosition float32

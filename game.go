@@ -8,7 +8,8 @@ import (
 )
 
 type Game struct {
-	grid Grid
+	grid    Grid
+	chronon int
 }
 
 func NewGame() *Game {
@@ -34,20 +35,8 @@ func (g *Game) updateFish() {
 	for i := 0; i < len(g.grid.locations); i++ {
 		for j := 0; j < len(g.grid.locations[i]); j++ {
 			if g.grid.locations[i][j].species == 1 {
-				g.grid.locations[i][j].moved = true
-				xPosition, yPoistion := g.grid.locations[i][j].fish.fishNextPosition(i, j)
-				g.grid.locations[xPosition][yPoistion] = g.grid.locations[i][j]
-				g.grid.locations[i][j].species = 0
-
-			}
-		}
-	}
-}
-func (grid *Grid) resetMovedPositions() {
-	for i := 0; i < len(grid.locations); i++ {
-		for j := 0; j < len(grid.locations[i]); j++ {
-			if grid.locations[i][j].species == 1 {
-				grid.locations[i][j].moved = false
+				fish := g.grid.locations[i][j].fish
+				fish.setNewPosition(&g.grid, i, j, 320, 240)
 			}
 		}
 	}
