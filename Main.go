@@ -4,7 +4,7 @@
 // Description:
 // A solution to the dinining philosophers problem
 // Issues:
-// 1.
+// 1. Not sure if the gaps in the water is a glitch
 // ToDO:
 // 1. Fish Reproduction - Semi Complete
 // 2. add Sharks
@@ -30,7 +30,7 @@ func main() {
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
-	g := NewGame(0, 0, 20, 0, 0, nil)
+	g := NewGame(0, 0, 20, 40, 0, nil)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

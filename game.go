@@ -32,7 +32,9 @@ func NewGame(numShark int, numFish int, fishBreed int, sharkBreed int, starve in
 		gridSize:   gridSize,
 	}
 	fish := newFish(g, 200, 100)
+	shark := newShark(g, 100, 50)
 	g.grid.locations[200][100] = *newSeacreatureFish(fish)
+	g.grid.locations[100][50] = *newSeacreatureShark(shark)
 	return g
 }
 func (g *Game) updateChronon() {
@@ -43,13 +45,22 @@ func (g *Game) updateChronon() {
 func (g *Game) Update() error {
 	g.updateChronon()
 	g.updateFish(320, 240)
+	g.updateShark(320, 240)
 	return nil
 }
 func (g *Game) updateFish(maxX int, maxY int) {
 	if len(g.fishSlice) > 0 {
 		for i := len(g.fishSlice) - 1; i >= 0; i-- {
 			currentFish := g.fishSlice[i]
-			currentFish.setNewPosition(g, maxX, maxY)
+			currentFish.updateFishPosition(g, maxX, maxY)
+		}
+	}
+}
+func (g *Game) updateShark(maxX int, maxY int) {
+	if len(g.sharkSlice) > 0 {
+		for i := len(g.sharkSlice) - 1; i >= 0; i-- {
+			currentShark := g.sharkSlice[i]
+			currentShark.updateSharkPosition(g, maxX, maxY)
 		}
 	}
 }
@@ -58,6 +69,7 @@ func (g *Game) updateFish(maxX int, maxY int) {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawGrid(screen)
 	g.drawFish(screen)
+	g.drawShark(screen)
 }
 
 func (g *Game) drawGrid(screen *ebiten.Image) {
@@ -67,6 +79,14 @@ func (g *Game) drawFish(screen *ebiten.Image) {
 	for i := 0; i < len(g.fishSlice); i++ {
 		fish := g.fishSlice[i]
 		screen.Set(fish.x, fish.y, color.RGBA{0, 255, 0, 255})
+	}
+}
+
+// Draws the shark pixels
+func (g *Game) drawShark(screen *ebiten.Image) {
+	for i := 0; i < len(g.sharkSlice); i++ {
+		shark := g.sharkSlice[i]
+		screen.Set(shark.x, shark.y, color.RGBA{255, 0, 0, 255})
 	}
 }
 
