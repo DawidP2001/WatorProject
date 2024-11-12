@@ -27,7 +27,7 @@ import (
 )
 
 func main() {
-	ebiten.SetWindowSize(960, 720)
+	ebiten.SetWindowSize(500, 500)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
 	g := NewGame(0, 0, 20, 40, 100, nil)

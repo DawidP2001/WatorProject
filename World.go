@@ -4,20 +4,20 @@ type World struct {
 	width     int
 	height    int
 	ncells    int
-	grid      [100][100]*Creature
+	grid      [250][250]*Creature
 	creatures []*Creature
 	nfish     int
 	nsharks   int
 }
 
-func newWorld(width, height int) *World {
-	return &World{
+func newWorld(width, height, nfish, nsharks int) *World {
+	w := &World{
 		width:  width,
 		height: height,
 		ncells: width * height,
-		//	grid:   [2][2]int,
-		// Declare Creatures ???
 	}
+	w.populateWorld(nfish, nsharks)
+	return w
 }
 func (w *World) spawnCreature(creatureId, x, y int) {
 	creature := newCreature(
@@ -30,14 +30,21 @@ func (w *World) spawnCreature(creatureId, x, y int) {
 
 func (w *World) populateWorld(nfish, nsharks int) {
 	w.nfish, w.nsharks = nfish, nsharks
+
+	w.placeCreatures(w.nfish, FISH)
+	//w.placeCreatures(w.nsharks, SHARK)
 }
 
 func (w *World) placeCreatures(ncreatures, creatureId int) {
-	for i := 0; i < ncreatures; i++ {
-		for true {
-			x :=
-			y := w.height
-			break
-		}
-	}
+	w.spawnCreature(creatureId, 25, 25)
+}
+
+func get_neighbours() {
+
+}
+func evolveCreatures() {
+
+}
+func evolveWorld() {
+
 }
