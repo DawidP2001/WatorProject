@@ -17,14 +17,14 @@ func newShark(g *Game, x int, y int) *Shark {
 }
 func removeShark(g *Game, shark *Shark) {
 	var newSlice []*Shark
+	g.semChannel <- true
 	for _, value := range g.sharkSlice {
-		if value.x == shark.x && value.y == shark.y {
-
-		} else {
+		if !(value.x == shark.x && value.y == shark.y) {
 			newSlice = append(newSlice, value)
 		}
 	}
 	g.sharkSlice = newSlice
+	<-g.semChannel
 }
 
 // Checks which positions are free (this is when none surrounding locations have food)
@@ -34,28 +34,49 @@ func (s *Shark) checkAvailablePositions(g *Game, maxX int, maxY int) (availableP
 		if g.grid.locations[s.x][s.y-1].species == 0 {
 			newPosition := Position{xPosition: s.x, yPosition: s.y - 1}
 			availablePositions = append(availablePositions, newPosition)
-		} else if g.grid.locations[s.x][s.y-1].species == 1 {
-
+		}
+	} else {
+		if g.grid.locations[s.x][maxY-1].species == 0 {
+			newPosition := Position{xPosition: s.x, yPosition: maxY - 1}
+			availablePositions = append(availablePositions, newPosition)
 		}
 	}
+
 	// Checks East
 	if s.x+1 < maxX {
 		if g.grid.locations[s.x+1][s.y].species == 0 {
 			newPosition := Position{xPosition: s.x + 1, yPosition: s.y}
 			availablePositions = append(availablePositions, newPosition)
 		}
+	} else {
+		if g.grid.locations[0][s.y].species == 0 {
+			newPosition := Position{xPosition: 0, yPosition: s.y - 1}
+			availablePositions = append(availablePositions, newPosition)
+		}
 	}
+
 	// Checks South
 	if s.y+1 < maxY {
 		if g.grid.locations[s.x][s.y+1].species == 0 {
 			newPosition := Position{xPosition: s.x, yPosition: s.y + 1}
 			availablePositions = append(availablePositions, newPosition)
 		}
+	} else {
+		if g.grid.locations[s.x][0].species == 0 {
+			newPosition := Position{xPosition: s.x, yPosition: 0}
+			availablePositions = append(availablePositions, newPosition)
+		}
 	}
+
 	// Checks West
 	if s.x-1 >= 0 {
 		if g.grid.locations[s.x-1][s.y].species == 0 {
 			newPosition := Position{xPosition: s.x - 1, yPosition: s.y}
+			availablePositions = append(availablePositions, newPosition)
+		}
+	} else {
+		if g.grid.locations[maxX-1][s.y].species == 0 {
+			newPosition := Position{xPosition: maxX - 1, yPosition: s.y - 1}
 			availablePositions = append(availablePositions, newPosition)
 		}
 	}
@@ -69,28 +90,49 @@ func (s *Shark) checkAvailableFood(g *Game, maxX int, maxY int) (availableFood [
 		if g.grid.locations[s.x][s.y-1].species == 1 {
 			newPosition := Position{xPosition: s.x, yPosition: s.y - 1}
 			availableFood = append(availableFood, newPosition)
-		} else if g.grid.locations[s.x][s.y-1].species == 1 {
-
+		}
+	} else {
+		if g.grid.locations[s.x][maxY-1].species == 1 {
+			newPosition := Position{xPosition: s.x, yPosition: maxY - 1}
+			availableFood = append(availableFood, newPosition)
 		}
 	}
+
 	// Checks East
 	if s.x+1 < maxX {
 		if g.grid.locations[s.x+1][s.y].species == 1 {
 			newPosition := Position{xPosition: s.x + 1, yPosition: s.y}
 			availableFood = append(availableFood, newPosition)
 		}
+	} else {
+		if g.grid.locations[0][s.y].species == 1 {
+			newPosition := Position{xPosition: 0, yPosition: s.y - 1}
+			availableFood = append(availableFood, newPosition)
+		}
 	}
+
 	// Checks South
 	if s.y+1 < maxY {
 		if g.grid.locations[s.x][s.y+1].species == 1 {
 			newPosition := Position{xPosition: s.x, yPosition: s.y + 1}
 			availableFood = append(availableFood, newPosition)
 		}
+	} else {
+		if g.grid.locations[s.x][0].species == 1 {
+			newPosition := Position{xPosition: s.x, yPosition: 0}
+			availableFood = append(availableFood, newPosition)
+		}
 	}
+
 	// Checks West
 	if s.x-1 >= 0 {
 		if g.grid.locations[s.x-1][s.y].species == 1 {
 			newPosition := Position{xPosition: s.x - 1, yPosition: s.y}
+			availableFood = append(availableFood, newPosition)
+		}
+	} else {
+		if g.grid.locations[maxX-1][s.y].species == 1 {
+			newPosition := Position{xPosition: maxX - 1, yPosition: s.y - 1}
 			availableFood = append(availableFood, newPosition)
 		}
 	}
@@ -99,7 +141,7 @@ func (s *Shark) checkAvailableFood(g *Game, maxX int, maxY int) (availableFood [
 
 // Eats
 func (s *Shark) eat(g *Game, newX int, newY int) {
-	s.energyLeft += g.starve // Increase sharks energy
+	s.energyLeft = g.starve // Increase sharks energy
 	fish := g.grid.locations[newX][newY].fish
 	removeFish(g, fish)
 	g.grid.locations[newX][newY] = g.grid.locations[s.x][s.y]
@@ -133,6 +175,8 @@ func (s *Shark) updateSharkPosition(g *Game, maxX int, maxY int) {
 
 // Set new Position
 func (s *Shark) setNewPosition(g *Game, newX int, newY int) {
+	g.semChannel <- true
+	print(newX, " ", newY, "\n")
 	g.grid.locations[newX][newY] = g.grid.locations[s.x][s.y]
 	s.x = newX
 	s.y = newY
@@ -142,6 +186,7 @@ func (s *Shark) setNewPosition(g *Game, newX int, newY int) {
 	} else {
 		s.makeNewShark(g)
 	}
+	<-g.semChannel
 }
 
 // Make new Shark

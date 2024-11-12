@@ -6,9 +6,11 @@
 // Issues:
 // 1. Not sure if the gaps in the water is a glitch
 // 2. Change the grid.locations to a pointer 2d array
-// 3. Fix starvation mechanic
 // 4. Sharks stop swimming after a while
-// 5. Fix the issue with slices
+// 5. Fix the issue with slices -> concurrency problem
+// Add More semaphores
+// Make checkAvailablePositions into a util method for both sharks and fish
+//  -> no need to check south west north and so on if its 1 function
 // ToDO:
 // 5. Add dimensionality
 // 6. Add threads
@@ -30,7 +32,13 @@ func main() {
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
-	g := NewGame(0, 0, 20, 40, 100, nil)
+	numSharks := 0   // Set this to the amount of starting sharks
+	numFish := 0     // Set this to the amount of starting fish
+	fishBreed := 20  // Set this to how many chronons should pass before your fish breed
+	sharkBreed := 40 // Set this to how many chronons should pass before your sharks breed
+	starve := 100    // Set this to how much time can pass before your shark starves
+	//	gridSize := []int{320, 240} // Set this to the size of the map
+	g := NewGame(numSharks, numFish, fishBreed, sharkBreed, starve, nil)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

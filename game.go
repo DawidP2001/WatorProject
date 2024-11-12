@@ -9,12 +9,13 @@ import (
 type Game struct {
 	grid       Grid
 	chronon    int
-	numShark   int     // Starting population of sharks
-	numFish    int     // Starting population of fish
-	fishBreed  int     // Number of time units that pass before a fish can reproduce
-	sharkBreed int     // Number of time units that must pass before a shark can reproduce;
-	starve     int     // Period of time a shark can go without food before dying;
-	gridSize   [][]int // Dimensions of world
+	numShark   int       // Starting population of sharks
+	numFish    int       // Starting population of fish
+	fishBreed  int       // Number of time units that pass before a fish can reproduce
+	sharkBreed int       // Number of time units that must pass before a shark can reproduce;
+	starve     int       // Period of time a shark can go without food before dying;
+	gridSize   [][]int   // Dimensions of world
+	semChannel chan bool // The semaphore for this program
 
 	fishSlice  []*Fish
 	sharkSlice []*Shark
@@ -30,6 +31,7 @@ func NewGame(numShark int, numFish int, fishBreed int, sharkBreed int, starve in
 		sharkBreed: sharkBreed,
 		starve:     starve,
 		gridSize:   gridSize,
+		semChannel: make(chan bool, 1),
 	}
 	fish := newFish(g, 200, 100)
 	shark := newShark(g, 100, 50)
