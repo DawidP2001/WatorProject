@@ -6,7 +6,7 @@
 // Issues:
 // 1. Fish Priorities going north - found in updateFish function
 // ToDO:
-// 1. Fish Reproduction
+// 1. Fish Reproduction - Semi Complete
 // 2. add Sharks
 // 3. Starvation
 // 4. shark Reproduction
@@ -30,7 +30,7 @@ func main() {
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
-	g := NewGame(0, 0, 10, 0, 0, nil)
+	g := NewGame(0, 0, 20, 0, 0, nil)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

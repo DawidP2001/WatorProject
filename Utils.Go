@@ -5,16 +5,9 @@ import (
 	"time"
 )
 
-type Seacreature struct {
-	species int
-	moved   bool
-	fish    Fish
-	shark   Shark
-}
-
 type Position struct {
-	xPosition float32
-	yPosition float32
+	xPosition int
+	yPosition int
 }
 
 /**
