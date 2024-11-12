@@ -5,11 +5,11 @@
 // A solution to the dinining philosophers problem
 // Issues:
 // 1. Not sure if the gaps in the water is a glitch
+// 2. Change the grid.locations to a pointer 2d array
+// 3. Fix starvation mechanic
+// 4. Sharks stop swimming after a while
+// 5. Fix the issue with slices
 // ToDO:
-// 1. Fish Reproduction - Semi Complete
-// 2. add Sharks
-// 3. Starvation
-// 4. shark Reproduction
 // 5. Add dimensionality
 // 6. Add threads
 //--------------------------------------------
@@ -30,7 +30,7 @@ func main() {
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
-	g := NewGame(0, 0, 20, 40, 0, nil)
+	g := NewGame(0, 0, 20, 40, 100, nil)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

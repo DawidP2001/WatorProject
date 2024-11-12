@@ -44,11 +44,13 @@ func (g *Game) updateChronon() {
 // Updates Logical side of the game
 func (g *Game) Update() error {
 	g.updateChronon()
-	g.updateFish(320, 240)
-	g.updateShark(320, 240)
+	g.updateFishs(320, 240)
+	g.updateSharks(320, 240)
 	return nil
 }
-func (g *Game) updateFish(maxX int, maxY int) {
+
+// Updates all the fish in the game
+func (g *Game) updateFishs(maxX int, maxY int) {
 	if len(g.fishSlice) > 0 {
 		for i := len(g.fishSlice) - 1; i >= 0; i-- {
 			currentFish := g.fishSlice[i]
@@ -56,11 +58,13 @@ func (g *Game) updateFish(maxX int, maxY int) {
 		}
 	}
 }
-func (g *Game) updateShark(maxX int, maxY int) {
+
+// Updates all the sharks in the game
+func (g *Game) updateSharks(maxX int, maxY int) {
 	if len(g.sharkSlice) > 0 {
 		for i := len(g.sharkSlice) - 1; i >= 0; i-- {
 			currentShark := g.sharkSlice[i]
-			currentShark.updateSharkPosition(g, maxX, maxY)
+			currentShark.updateShark(g, maxX, maxY)
 		}
 	}
 }

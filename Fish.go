@@ -15,6 +15,18 @@ func newFish(g *Game, x int, y int) *Fish {
 	return &fish
 }
 
+// Removes a fish from the fishSlice
+func removeFish(g *Game, fish *Fish) {
+	var newSlice []*Fish
+	for i := 0; i < len(g.fishSlice); i++ {
+		if g.fishSlice[i].x == fish.x && g.fishSlice[i].y == fish.y {
+
+		} else {
+			newSlice = append(newSlice, g.fishSlice[i])
+		}
+	}
+	g.fishSlice = newSlice
+}
 func (f *Fish) checkAvailablePositions(g *Game, maxX int, maxY int) (availablePositions []Position) {
 	// Checks North
 	if f.y-1 >= 0 {

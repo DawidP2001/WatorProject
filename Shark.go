@@ -15,6 +15,17 @@ func newShark(g *Game, x int, y int) *Shark {
 	g.sharkSlice = append(g.sharkSlice, &shark)
 	return &shark
 }
+func removeShark(g *Game, shark *Shark) {
+	var newSlice []*Shark
+	for _, value := range g.sharkSlice {
+		if value.x == shark.x && value.y == shark.y {
+
+		} else {
+			newSlice = append(newSlice, value)
+		}
+	}
+	g.sharkSlice = newSlice
+}
 
 // Checks which positions are free (this is when none surrounding locations have food)
 func (s *Shark) checkAvailablePositions(g *Game, maxX int, maxY int) (availablePositions []Position) {
@@ -87,15 +98,28 @@ func (s *Shark) checkAvailableFood(g *Game, maxX int, maxY int) (availableFood [
 }
 
 // Eats
-func (s *Shark) eat() {
-
+func (s *Shark) eat(g *Game, newX int, newY int) {
+	s.energyLeft += g.starve // Increase sharks energy
+	fish := g.grid.locations[newX][newY].fish
+	removeFish(g, fish)
+	g.grid.locations[newX][newY] = g.grid.locations[s.x][s.y]
+	s.x = newX
+	s.y = newY
+	if g.chronon%g.fishBreed != 0 {
+		g.grid.locations[s.x][s.y] = *newSeacreatureEmpty()
+	} else {
+		s.makeNewShark(g)
+	}
 }
 
 // Updates shark position
 func (s *Shark) updateSharkPosition(g *Game, maxX int, maxY int) {
-	availableFood := []int{} // s.checkAvailableFood(g, maxX, maxY)
+	availableFood := s.checkAvailableFood(g, maxX, maxY)
 	if len(availableFood) != 0 {
-
+		newPosition := genRadomPosition(availableFood)
+		newX := newPosition.xPosition
+		newY := newPosition.yPosition
+		s.eat(g, newX, newY)
 	} else {
 		availablePositions := s.checkAvailablePositions(g, maxX, maxY)
 		if len(availablePositions) != 0 {
@@ -116,8 +140,33 @@ func (s *Shark) setNewPosition(g *Game, newX int, newY int) {
 	if g.chronon%g.fishBreed != 0 {
 		g.grid.locations[s.x][s.y] = *newSeacreatureEmpty()
 	} else {
-		newShark := newShark(g, s.x, s.y)
-		g.sharkSlice = append(g.sharkSlice, newShark)
-		g.grid.locations[newShark.x][newShark.y] = *newSeacreatureShark(newShark)
+		s.makeNewShark(g)
 	}
+}
+
+// Make new Shark
+func (s *Shark) makeNewShark(g *Game) {
+	newShark := newShark(g, s.x, s.y)
+	g.sharkSlice = append(g.sharkSlice, newShark)
+	g.grid.locations[newShark.x][newShark.y] = *newSeacreatureShark(newShark)
+}
+
+// Checks whether the shark starved
+func (s *Shark) checkStarve(g *Game) {
+	if s.energyLeft < 1 {
+		g.grid.locations[s.x][s.y] = *newSeacreatureEmpty()
+		removeShark(g, s)
+	}
+}
+
+// Uses energy per chronon
+func (s *Shark) useEnergy() {
+	s.energyLeft--
+}
+
+// Updates the shark
+func (s *Shark) updateShark(g *Game, maxX int, maxY int) {
+	s.updateSharkPosition(g, maxX, maxY) //Checks Position
+	s.useEnergy()                        // Uses energy
+	s.checkStarve(g)                     // Checks if no energy left
 }
