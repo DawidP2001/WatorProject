@@ -1,6 +1,7 @@
 package main
 
 type Shark struct {
+	dead       bool
 	energyLeft int // Stores the amount of energy a shark has left
 	x          int
 	y          int
@@ -8,6 +9,7 @@ type Shark struct {
 
 func newShark(g *Game, x int, y int) *Shark {
 	shark := Shark{
+		dead:       false,
 		energyLeft: g.starve,
 		x:          x,
 		y:          y,
@@ -15,16 +17,8 @@ func newShark(g *Game, x int, y int) *Shark {
 	g.sharkSlice = append(g.sharkSlice, &shark)
 	return &shark
 }
-func removeShark(g *Game, shark *Shark) {
-	var newSlice []*Shark
-	for _, value := range g.sharkSlice {
-		if value.x == shark.x && value.y == shark.y {
-
-		} else {
-			newSlice = append(newSlice, value)
-		}
-	}
-	g.sharkSlice = newSlice
+func (s *Shark) removeShark() {
+	s.dead = true
 }
 
 // Checks which positions are free (this is when none surrounding locations have food)
@@ -101,7 +95,7 @@ func (s *Shark) checkAvailableFood(g *Game, maxX int, maxY int) (availableFood [
 func (s *Shark) eat(g *Game, newX int, newY int) {
 	s.energyLeft += g.starve // Increase sharks energy
 	fish := g.grid.locations[newX][newY].fish
-	removeFish(g, fish)
+	fish.removeFish()
 	g.grid.locations[newX][newY] = g.grid.locations[s.x][s.y]
 	s.x = newX
 	s.y = newY
@@ -155,7 +149,7 @@ func (s *Shark) makeNewShark(g *Game) {
 func (s *Shark) checkStarve(g *Game) {
 	if s.energyLeft < 1 {
 		g.grid.locations[s.x][s.y] = *newSeacreatureEmpty()
-		removeShark(g, s)
+		s.removeShark()
 	}
 }
 

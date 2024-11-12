@@ -54,7 +54,9 @@ func (g *Game) updateFishs(maxX int, maxY int) {
 	if len(g.fishSlice) > 0 {
 		for i := len(g.fishSlice) - 1; i >= 0; i-- {
 			currentFish := g.fishSlice[i]
-			currentFish.updateFishPosition(g, maxX, maxY)
+			if !currentFish.dead {
+				currentFish.updateFishPosition(g, maxX, maxY)
+			}
 		}
 	}
 }
@@ -64,7 +66,9 @@ func (g *Game) updateSharks(maxX int, maxY int) {
 	if len(g.sharkSlice) > 0 {
 		for i := len(g.sharkSlice) - 1; i >= 0; i-- {
 			currentShark := g.sharkSlice[i]
-			currentShark.updateShark(g, maxX, maxY)
+			if !currentShark.dead {
+				currentShark.updateShark(g, maxX, maxY)
+			}
 		}
 	}
 }
@@ -82,7 +86,9 @@ func (g *Game) drawGrid(screen *ebiten.Image) {
 func (g *Game) drawFish(screen *ebiten.Image) {
 	for i := 0; i < len(g.fishSlice); i++ {
 		fish := g.fishSlice[i]
-		screen.Set(fish.x, fish.y, color.RGBA{0, 255, 0, 255})
+		if !fish.dead {
+			screen.Set(fish.x, fish.y, color.RGBA{0, 255, 0, 255})
+		}
 	}
 }
 
@@ -90,7 +96,9 @@ func (g *Game) drawFish(screen *ebiten.Image) {
 func (g *Game) drawShark(screen *ebiten.Image) {
 	for i := 0; i < len(g.sharkSlice); i++ {
 		shark := g.sharkSlice[i]
-		screen.Set(shark.x, shark.y, color.RGBA{255, 0, 0, 255})
+		if !shark.dead {
+			screen.Set(shark.x, shark.y, color.RGBA{255, 0, 0, 255})
+		}
 	}
 }
 

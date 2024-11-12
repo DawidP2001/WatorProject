@@ -1,31 +1,25 @@
 package main
 
 type Fish struct {
-	x int
-	y int
+	dead bool
+	x    int
+	y    int
 }
 
 func newFish(g *Game, x int, y int) *Fish {
 	fish := Fish{
-		x: x,
-		y: y,
+		dead: false,
+		x:    x,
+		y:    y,
 	}
 	g.fishSlice = append(g.fishSlice, &fish)
 
 	return &fish
 }
 
-// Removes a fish from the fishSlice
-func removeFish(g *Game, fish *Fish) {
-	var newSlice []*Fish
-	for i := 0; i < len(g.fishSlice); i++ {
-		if g.fishSlice[i].x == fish.x && g.fishSlice[i].y == fish.y {
-
-		} else {
-			newSlice = append(newSlice, g.fishSlice[i])
-		}
-	}
-	g.fishSlice = newSlice
+// Kills the fish
+func (f *Fish) removeFish() {
+	f.dead = true
 }
 func (f *Fish) checkAvailablePositions(g *Game, maxX int, maxY int) (availablePositions []Position) {
 	// Checks North
