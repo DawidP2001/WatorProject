@@ -66,7 +66,7 @@ func (f *Fish) updateFishPosition(g *Game, maxX int, maxY int) {
 // Updates the location of a fish
 
 func (f *Fish) setNewPosition(g *Game, newX int, newY int) {
-	g.grid.locations[newX][newY] = g.grid.locations[f.x][f.y]
+	g.grid.locations[newX][newY] = *newSeacreatureFish(f)
 	f.x = newX
 	f.y = newY
 	// If its breeding time don't erase fish

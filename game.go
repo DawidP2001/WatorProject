@@ -71,6 +71,8 @@ func (g *Game) updateSharks(maxX int, maxY int) {
 			}
 		}
 	}
+	print(len(g.sharkSlice))
+	print("\n")
 }
 
 // Draws the screen
@@ -81,7 +83,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) drawGrid(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0, 0, 255, 255})
+	//screen.Fill(color.RGBA{0, 0, 255, 255})
+	for i := 0; i < 320; i++ {
+		for j := 0; j < 240; j++ {
+			screen.Set(i, j, color.RGBA{0, 0, 255, 255})
+		}
+	}
 }
 func (g *Game) drawFish(screen *ebiten.Image) {
 	for i := 0; i < len(g.fishSlice); i++ {

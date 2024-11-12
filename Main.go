@@ -10,6 +10,8 @@
 // 4. Sharks stop swimming after a while
 // 5. Fix the issue with slices
 // ToDO:
+// Add ability to move through border
+// Add starting population
 // 5. Add dimensionality
 // 6. Add threads
 //--------------------------------------------

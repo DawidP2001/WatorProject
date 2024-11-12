@@ -63,8 +63,6 @@ func (s *Shark) checkAvailableFood(g *Game, maxX int, maxY int) (availableFood [
 		if g.grid.locations[s.x][s.y-1].species == 1 {
 			newPosition := Position{xPosition: s.x, yPosition: s.y - 1}
 			availableFood = append(availableFood, newPosition)
-		} else if g.grid.locations[s.x][s.y-1].species == 1 {
-
 		}
 	}
 	// Checks East
@@ -93,7 +91,7 @@ func (s *Shark) checkAvailableFood(g *Game, maxX int, maxY int) (availableFood [
 
 // Eats
 func (s *Shark) eat(g *Game, newX int, newY int) {
-	s.energyLeft += g.starve // Increase sharks energy
+	s.energyLeft = g.starve // Increase sharks energy
 	fish := g.grid.locations[newX][newY].fish
 	fish.removeFish()
 	g.grid.locations[newX][newY] = g.grid.locations[s.x][s.y]
