@@ -176,7 +176,6 @@ func (s *Shark) updateSharkPosition(g *Game, maxX int, maxY int) {
 // Set new Position
 func (s *Shark) setNewPosition(g *Game, newX int, newY int) {
 	g.semChannel <- true
-	print(newX, " ", newY, "\n")
 	g.grid.locations[newX][newY] = g.grid.locations[s.x][s.y]
 	s.x = newX
 	s.y = newY

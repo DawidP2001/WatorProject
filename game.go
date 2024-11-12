@@ -34,7 +34,7 @@ func NewGame(numShark int, numFish int, fishBreed int, sharkBreed int, starve in
 		semChannel: make(chan bool, 1),
 	}
 	fish := newFish(g, 200, 100)
-	shark := newShark(g, 100, 50)
+	shark := newShark(g, 100, 0)
 	g.grid.locations[200][100] = *newSeacreatureFish(fish)
 	g.grid.locations[100][50] = *newSeacreatureShark(shark)
 	return g
@@ -53,10 +53,20 @@ func (g *Game) Update() error {
 
 // Updates all the fish in the game
 func (g *Game) updateFishs(maxX int, maxY int) {
-	if len(g.fishSlice) > 0 {
-		for i := len(g.fishSlice) - 1; i >= 0; i-- {
-			currentFish := g.fishSlice[i]
-			currentFish.updateFishPosition(g, maxX, maxY)
+	/*
+		if len(g.fishSlice) > 0 {
+			for i := len(g.fishSlice) - 1; i >= 0; i-- {
+				currentFish := g.fishSlice[i]
+				currentFish.updateFishPosition(g, maxX, maxY)
+			}
+		}
+	*/
+	for i := 0; i < len(g.grid.locations); i++ {
+		for j := 0; j < len(g.grid.locations[i]); j++ {
+			if g.grid.locations[i][j].species == 1 {
+				fish := g.grid.locations[i][j].fish
+				fish.updateFishPosition(g, maxX, maxY)
+			}
 		}
 	}
 }

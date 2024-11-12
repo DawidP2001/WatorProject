@@ -29,7 +29,7 @@ import (
 )
 
 func main() {
-	ebiten.SetWindowSize(960, 720)
+	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetTPS(30)
 	numSharks := 0   // Set this to the amount of starting sharks
