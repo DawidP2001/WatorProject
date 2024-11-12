@@ -47,19 +47,19 @@ func (f *Fish) checkAvailablePositions(g *Game, maxX int, maxY int) (availablePo
 	return availablePositions
 }
 
-func (f *Fish) setNewPosition(g *Game, maxX int, maxY int) {
+func (f *Fish) updateFishPosition(g *Game, maxX int, maxY int) {
 	availablePositions := f.checkAvailablePositions(g, maxX, maxY)
 	if len(availablePositions) != 0 {
 		newPosition := genRadomPosition(availablePositions)
 		newX := newPosition.xPosition
 		newY := newPosition.yPosition
-		f.updateFishLocation(g, newX, newY)
+		f.setNewPosition(g, newX, newY)
 	}
 }
 
 // Updates the location of a fish
 
-func (f *Fish) updateFishLocation(g *Game, newX int, newY int) {
+func (f *Fish) setNewPosition(g *Game, newX int, newY int) {
 	g.grid.locations[newX][newY] = g.grid.locations[f.x][f.y]
 	f.x = newX
 	f.y = newY
