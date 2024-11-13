@@ -10,8 +10,8 @@ type Game struct {
 	world *World
 }
 
-func NewGame(NumShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int, threads int) *Game {
-	w := newWorld(NumShark, numFish, fishBreed, sharkBreed, starve, gridSize)
+func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int, threads int) *Game {
+	w := newWorld(numShark, numFish, fishBreed, sharkBreed, starve, gridSize)
 	return &Game{
 		world: w,
 	}
