@@ -25,6 +25,7 @@ func (g *Game) Update() error {
 
 // Draws the screen
 func (g *Game) Draw(screen *ebiten.Image) {
+	ebiten.SetWindowSize(g.world.width*2, g.world.height*2)
 	g.drawGrid(screen)
 }
 

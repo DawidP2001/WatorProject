@@ -7,7 +7,7 @@ import (
 type World struct {
 	width      int
 	height     int
-	grid       [250][250]*Creature
+	grid       [][]*Creature
 	creatures  []*Creature
 	fishBreed  int
 	sharkBreed int
@@ -17,7 +17,6 @@ type World struct {
 func newWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int) *World {
 	width := gridSize[0]
 	height := gridSize[1]
-
 	w := &World{
 		width:      width,
 		height:     height,
@@ -32,6 +31,10 @@ func newWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]
 
 // Fills the world with creature objects
 func (w *World) fillTheGrid() {
+	w.grid = make([][]*Creature, w.width)
+	for i := range w.grid {
+		w.grid[i] = make([]*Creature, w.height)
+	}
 	for i := 0; i < w.width; i++ {
 		for j := 0; j < w.height; j++ {
 			w.grid[i][j] = newCreatureEmpty(i, j)

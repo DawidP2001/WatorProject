@@ -4,14 +4,10 @@
 // Description:
 // A solution to the dinining philosophers problem
 // Issues:
-// 1. Not sure if the gaps in the water is a glitch
-// 2. Change the grid.locations to a pointer 2d array
-// 3. Fix starvation mechanic
-// 4. Sharks stop swimming after a while
-// 5. Fix the issue with slices
 // ToDO:
 // 5. Add dimensionality
 // 6. Add threads
+// Mkae grid resizable
 //--------------------------------------------
 // Note: A lot of the comments were placed while I was learning more about the language
 
@@ -27,7 +23,6 @@ import (
 )
 
 func main() {
-	ebiten.SetWindowSize(500, 500)
 	ebiten.SetWindowTitle("Wa-Tor")
 	ebiten.SetTPS(30)
 
