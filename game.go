@@ -19,6 +19,7 @@ func NewGame(width, height, nfish, nsharks int) *Game {
 
 // Updates Logical side of the game
 func (g *Game) Update() error {
+	g.world.evolveWorld()
 	return nil
 }
 
@@ -31,11 +32,13 @@ func (g *Game) drawGrid(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0, 0, 255, 255})
 	for i := 0; i < g.world.width; i++ {
 		for j := 0; j < g.world.height; j++ {
-			creature := g.world.grid[i][j]
-			if creature.id == FISH {
-				screen.Set(i, j, color.RGBA{0, 255, 0, 255})
-			} else if creature.id == SHARK {
-				screen.Set(i, j, color.RGBA{255, 0, 0, 255})
+			if g.world.grid[i][j] != nil {
+				creature := g.world.grid[i][j]
+				if creature.id == FISH {
+					screen.Set(i, j, color.RGBA{0, 255, 0, 255})
+				} else if creature.id == SHARK {
+					screen.Set(i, j, color.RGBA{255, 0, 0, 255})
+				}
 			}
 		}
 	}

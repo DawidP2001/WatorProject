@@ -21,3 +21,11 @@ func newCreature(id, x, y, initialEnergy, fishBreed int) *Creature {
 		dead:      false,
 	}
 }
+
+func newCreatureEmpty(x, y int) *Creature {
+	return &Creature{
+		id: 0,
+		x:  x,
+		y:  y,
+	}
+}
