@@ -94,7 +94,8 @@ func (w *World) get_neighbours(x, y int) [4]*Creature {
 }
 
 // Moves Creatures
-func (w *World) evolveCreatures(creature *Creature) {
+func (w *World) evolveCreatures(creature *Creature, semChannel chan bool) {
+	semChannel <- true
 	var newX int
 	var newY int
 	neighbours := w.get_neighbours(creature.x, creature.y)
@@ -140,19 +141,21 @@ func (w *World) evolveCreatures(creature *Creature) {
 			w.grid[x][y] = newCreatureEmpty(x, y)
 		}
 	}
+	<-semChannel
 }
 func (w *World) evolveWorld() {
 	// Shuffles the creature slice
 	rand.Shuffle(len(w.creatures),
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
 
+	semChannel := make(chan bool, 4)
 	ncreatures := len(w.creatures)
 	for i := 0; i < ncreatures; i++ {
 		creature := w.creatures[i]
 		if creature.dead {
 			continue
 		}
-		w.evolveCreatures(creature)
+		go w.evolveCreatures(creature, semChannel)
 	}
 	var newCreatures []*Creature
 	for i := 0; i < len(w.creatures); i++ {
