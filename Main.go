@@ -27,10 +27,14 @@ import (
 )
 
 func main() {
-	ebiten.SetWindowSize(960, 720)
-	ebiten.SetWindowTitle("Hello, World!")
+	ebiten.SetWindowSize(500, 500)
+	ebiten.SetWindowTitle("Wa-Tor")
 	ebiten.SetTPS(30)
-	g := NewGame(0, 0, 20, 40, 100, nil)
+	width := 250
+	height := 250
+	nfish := 50
+	nsharks := 100
+	g := NewGame(width, height, nfish, nsharks)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

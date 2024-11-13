@@ -1,5 +1,0 @@
-1. Project License: Dining Philosophers © 2024 by Dawid Pionk is licensed under CC BY-NC-SA 4.0 
-2. Authors of Project: Dawid Pionk
-3. How to install project: download from [here](https://github.com/DawidP2001/ConDevLabs/tree/main/Lab06-DiningPhilosophers)
-4. List of any required Libraries, platform issues, etc: golang: math/rand/v2, sync, time
-5. List of files and what they contain: DiningPhilosophers.go: the program for this exerise
