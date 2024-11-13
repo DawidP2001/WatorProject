@@ -30,11 +30,16 @@ func main() {
 	ebiten.SetWindowSize(500, 500)
 	ebiten.SetWindowTitle("Wa-Tor")
 	ebiten.SetTPS(30)
-	width := 250
-	height := 250
-	nfish := 50
-	nsharks := 100
-	g := NewGame(width, height, nfish, nsharks)
+
+	numShark := 100              //Starting population of sharks;
+	numFish := 100               //Starting population of fish;
+	fishBreed := 5               //Number of time units that pass before a fish can reproduce;
+	sharkBreed := 25             //Number of time units that must pass before a shark can reproduce;
+	starve := 20                 //Period of time a shark can go without food before dying;
+	gridSize := [2]int{250, 250} //Dimensions of world;
+	threads := 0                 //Number of threads to use.
+
+	g := NewGame(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

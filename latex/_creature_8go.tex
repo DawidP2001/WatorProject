@@ -1,0 +1,62 @@
+\doxysection{Creature.\+go File Reference}
+\hypertarget{_creature_8go}{}\label{_creature_8go}\index{Creature.go@{Creature.go}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\} \mbox{\hyperlink{_creature_8go_ac6cfb73c1c33729c6696ce9e41780c13}{newCreature}} (id, x, y, initialEnergy, breedTime int) \texorpdfstring{$\ast$}{*}Creature\\
+
+\end{tabbing}\begin{DoxyCompactList}\small\item\em Creates a new struct of type Creature. \end{DoxyCompactList}\item 
+func \mbox{\hyperlink{_creature_8go_af29afb3d54a4217182b239711f597bec}{new\+Creature\+Empty}} (x, y int) \texorpdfstring{$\ast$}{*}Creature
+\begin{DoxyCompactList}\small\item\em Creates a new struct of type Creature that will be used as an empty location on the grid. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{_creature_8go_ac6cfb73c1c33729c6696ce9e41780c13}\index{Creature.go@{Creature.go}!newCreature@{newCreature}}
+\index{newCreature@{newCreature}!Creature.go@{Creature.go}}
+\doxysubsubsection{\texorpdfstring{newCreature()}{newCreature()}}
+{\footnotesize\ttfamily \label{_creature_8go_ac6cfb73c1c33729c6696ce9e41780c13} 
+package main type Creature struct @0 new\+Creature (\begin{DoxyParamCaption}\item[{id}]{}{, }\item[{x}]{}{, }\item[{y}]{}{, }\item[{initial\+Energy}]{}{, }\item[{breed\+Time int}]{}{}\end{DoxyParamCaption})}
+
+
+
+Creates a new struct of type Creature. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Stores what type of creature it is (0-\/none, 1-\/Fish, 2-\/Shark) \\
+\hline
+{\em x} & X coordinate \\
+\hline
+{\em y} & Y coordinate \\
+\hline
+{\em initial\+Energy} & How much energy should the creature start with (only really affects sharks) \\
+\hline
+{\em breed\+Time} & When this fertility level is reached the creature reproduces \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer towards a newly created struct of type Creature 
+\end{DoxyReturn}
+\Hypertarget{_creature_8go_af29afb3d54a4217182b239711f597bec}\index{Creature.go@{Creature.go}!newCreatureEmpty@{newCreatureEmpty}}
+\index{newCreatureEmpty@{newCreatureEmpty}!Creature.go@{Creature.go}}
+\doxysubsubsection{\texorpdfstring{newCreatureEmpty()}{newCreatureEmpty()}}
+{\footnotesize\ttfamily \label{_creature_8go_af29afb3d54a4217182b239711f597bec} 
+func new\+Creature\+Empty (\begin{DoxyParamCaption}\item[{x}]{}{, }\item[{y int}]{}{}\end{DoxyParamCaption})}
+
+
+
+Creates a new struct of type Creature that will be used as an empty location on the grid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X coordinate \\
+\hline
+{\em y} & Y coordinate \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer towards a newly created struct of type Creature that is of type 0 
+\end{DoxyReturn}
