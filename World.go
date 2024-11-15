@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"sync"
 )
 
 type World struct {
@@ -94,7 +95,7 @@ func (w *World) get_neighbours(x, y int) [4]*Creature {
 }
 
 // Moves Creatures
-func (w *World) evolveCreatures(creature *Creature, semChannel chan bool) {
+func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
 	semChannel <- true
 	var newX int
 	var newY int
@@ -108,8 +109,10 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool) {
 			newX = neighbour.x
 			newY = neighbour.y
 			creature.energy += 2
+			mutex.Lock()
 			w.grid[newX][newY].dead = true
 			w.grid[newX][newY] = newCreatureEmpty(newX, newY)
+			mutex.Unlock()
 			moved = true
 		}
 	}
@@ -127,12 +130,15 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool) {
 	}
 	if creature.energy < 0 {
 		creature.dead = true
+		mutex.Lock()
 		w.grid[creature.x][creature.y].id = 0
+		mutex.Unlock()
 	} else if moved {
 		x := creature.x
 		y := creature.y
 		creature.x = newX
 		creature.y = newY
+		mutex.Lock()
 		w.grid[newX][newY] = creature
 		if creature.fertility >= creature.breedTime {
 			creature.fertility = 0
@@ -140,8 +146,10 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool) {
 		} else {
 			w.grid[x][y] = newCreatureEmpty(x, y)
 		}
+		mutex.Unlock()
 	}
 	<-semChannel
+	defer wg.Done()
 }
 func (w *World) evolveWorld() {
 	// Shuffles the creature slice
@@ -149,14 +157,19 @@ func (w *World) evolveWorld() {
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
 
 	semChannel := make(chan bool, 4)
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
 	ncreatures := len(w.creatures)
 	for i := 0; i < ncreatures; i++ {
 		creature := w.creatures[i]
 		if creature.dead {
 			continue
 		}
-		go w.evolveCreatures(creature, semChannel)
+		wg.Add(1)
+		//log.Fatal(http.ListenAndServe("localhost:6060", nil)) // Start pprof server
+		go w.evolveCreatures(creature, semChannel, &mutex, &wg)
 	}
+	wg.Wait()
 	var newCreatures []*Creature
 	for i := 0; i < len(w.creatures); i++ {
 		if !w.creatures[i].dead {
