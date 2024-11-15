@@ -15,6 +15,15 @@ type World struct {
 	starve     int
 }
 
+/**
+* @brief Creates a new struct of type Creature that will be used as an empty location on the grid
+*
+* This function is a constructor for the struct Creature, it takes several int variables and assigns it to this new instance.
+*
+* @param x X coordinate
+* @param y Y coordinate
+* @return A pointer towards a newly created struct of type Creature that is of type 0
+ */
 func newWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int) *World {
 	width := gridSize[0]
 	height := gridSize[1]
@@ -77,10 +86,10 @@ func (w *World) placeCreatures(ncreatures, creatureId int) {
 }
 func (w *World) get_neighbours(x, y int) [4]*Creature {
 	movements := [][2]int{
-		{0, -1}, // Up
-		{1, 0},  // Right
-		{0, 1},  // Down
-		{-1, 0}, // Left
+		{0, -1}, // North
+		{1, 0},  // East
+		{0, 1},  // South
+		{-1, 0}, // West
 	}
 	var neighbours [4]*Creature
 	for i, movement := range movements {
@@ -96,7 +105,6 @@ func (w *World) get_neighbours(x, y int) [4]*Creature {
 
 // Moves Creatures
 func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	semChannel <- true
 	var newX int
 	var newY int
 	neighbours := w.get_neighbours(creature.x, creature.y)
@@ -104,12 +112,12 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex 
 	moved := false
 	if creature.id == SHARK {
 		if checkIfAnyNeighbourIsFood(neighbours) {
+			mutex.Lock()
 			neighbours := getFoodNeighbours(neighbours)
 			neighbour := randomiseNeighbour(neighbours)
 			newX = neighbour.x
 			newY = neighbour.y
 			creature.energy += 2
-			mutex.Lock()
 			w.grid[newX][newY].dead = true
 			w.grid[newX][newY] = newCreatureEmpty(newX, newY)
 			mutex.Unlock()
@@ -149,14 +157,14 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex 
 		mutex.Unlock()
 	}
 	<-semChannel
-	defer wg.Done()
+	wg.Done()
 }
 func (w *World) evolveWorld() {
 	// Shuffles the creature slice
 	rand.Shuffle(len(w.creatures),
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
 
-	semChannel := make(chan bool, 4)
+	semChannel := make(chan bool, 16)
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	ncreatures := len(w.creatures)
@@ -166,7 +174,7 @@ func (w *World) evolveWorld() {
 			continue
 		}
 		wg.Add(1)
-		//log.Fatal(http.ListenAndServe("localhost:6060", nil)) // Start pprof server
+		semChannel <- true
 		go w.evolveCreatures(creature, semChannel, &mutex, &wg)
 	}
 	wg.Wait()
