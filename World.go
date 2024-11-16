@@ -16,13 +16,17 @@ type World struct {
 }
 
 /**
-* @brief Creates a new struct of type Creature that will be used as an empty location on the grid
+* @brief Creates a new struct of type World
 *
-* This function is a constructor for the struct Creature, it takes several int variables and assigns it to this new instance.
+* This function is a constructor for the struct world, it takes several int variables and assigns it to this new instance.
 *
-* @param x X coordinate
-* @param y Y coordinate
-* @return A pointer towards a newly created struct of type Creature that is of type 0
+* @param numShark 		Number of Sharks at the start of the game
+* @param numFish		Number of Fish at the start of the game
+* @param fishBread		Number of chronons that pass before a fish breeds
+* @param sharkBread		Number of chronons that pass before a shark breeds
+* @param starve			Number of chronons that pass before a shark starves
+* @param gridSize		An int array of size 2, position 0 holds the width of the grid, position 1 holds the height
+* @return A pointer towards a newly created struct of type World
  */
 func newWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int) *World {
 	width := gridSize[0]
@@ -39,7 +43,11 @@ func newWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]
 	return w
 }
 
-// Fills the world with creature objects
+/**
+* @brief Fills the grid with empty Creature object pointers
+*
+* This function is used to initialise the grid for the game with creature object pointers that are used to represent empty water squares
+ */
 func (w *World) fillTheGrid() {
 	w.grid = make([][]*Creature, w.width)
 	for i := range w.grid {
@@ -51,6 +59,16 @@ func (w *World) fillTheGrid() {
 		}
 	}
 }
+
+/**
+* @brief Spawns either a fish or a shark on the map
+*
+* This function is used to add a creature into a creature array as well adding it into the world grid
+*
+* @param creatureId 	Holds the value that represents whether its water, fish or shark
+* @param x				X coordinate for the creature
+* @param y				Y coordinate for the creature
+ */
 func (w *World) spawnCreature(creatureId, x, y int) {
 	var breedTime int
 	if creatureId == 1 {
@@ -66,11 +84,27 @@ func (w *World) spawnCreature(creatureId, x, y int) {
 	w.grid[x][y] = creature
 }
 
+/**
+* @brief Populates the world with fish and sharks
+*
+* This function is called initially to call other functions which place the sharks and fish at random postion
+*
+* @param numFish 		Number of Fish at the start of the game
+* @param numShark		Number of Shark at the start of the game
+ */
 func (w *World) populateWorld(numFish, numShark int) {
 	w.placeCreatures(numFish, FISH)
 	w.placeCreatures(numShark, SHARK)
 }
 
+/**
+* @brief Places creatures at a random Position on the grid
+*
+* Places a certain amount of fish or sharks on the grid. Their position is randomly chosen and assigned if it isn't already preoccupied
+*
+* @param ncreatures 	Number of creatures to place on the grid
+* @param creatureId		The Id of the type of creature that is being placed, just used to pass a parameter to another function
+ */
 func (w *World) placeCreatures(ncreatures, creatureId int) {
 	for i := 0; i < ncreatures; i++ {
 		finish := false
