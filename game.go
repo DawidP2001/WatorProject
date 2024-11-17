@@ -39,7 +39,7 @@ func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]i
 * @return 				Returns a nil error
  */
 func (g *Game) Update() error {
-	g.world.evolveWorld()
+	g.world.iterateProgram()
 	return nil
 }
 
@@ -68,9 +68,9 @@ func (g *Game) drawGrid(screen *ebiten.Image) {
 		for j := 0; j < g.world.height; j++ {
 			if g.world.grid[i][j] != nil {
 				creature := g.world.grid[i][j]
-				if creature.id == FISH {
+				if creature.id == 1 {
 					screen.Set(i, j, color.RGBA{0, 255, 0, 255})
-				} else if creature.id == SHARK {
+				} else if creature.id == 2 {
 					screen.Set(i, j, color.RGBA{255, 0, 0, 255})
 				}
 			}

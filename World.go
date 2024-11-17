@@ -93,8 +93,8 @@ func (w *World) spawnCreature(creatureId, x, y int) {
 * @param numShark		Number of Shark at the start of the game
  */
 func (w *World) populateWorld(numFish, numShark int) {
-	w.placeCreatures(numFish, FISH)
-	w.placeCreatures(numShark, SHARK)
+	w.placeCreatures(numFish, 1)
+	w.placeCreatures(numShark, 2)
 }
 
 /**
@@ -161,13 +161,13 @@ func (w *World) get_neighbours(x, y int) [4]*Creature {
  */
 //////////////////////////////////
 
-func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
+func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
 	var newX int
 	var newY int
 	neighbours := w.get_neighbours(creature.x, creature.y)
 	creature.fertility += 1
 	moved := false
-	if creature.id == SHARK {
+	if creature.id == 2 {
 		if checkIfAnyNeighbourIsFood(neighbours) {
 			mutex.Lock()
 			neighbours := getFoodNeighbours(neighbours)
@@ -187,7 +187,7 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex 
 			randomNeighbor := randomiseNeighbour(emptyNeighbours)
 			newX = randomNeighbor.x
 			newY = randomNeighbor.y
-			if creature.id == SHARK {
+			if creature.id == 2 {
 				creature.energy--
 			}
 			moved = true
@@ -225,7 +225,7 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex 
 * It then creates a new Creature slice and appends it with all the Creatures that are still alive. It then sets the creature slice with this new created slice.
 *
  */
-func (w *World) evolveWorld() {
+func (w *World) iterateProgram() {
 	// Shuffles the creature slice
 	rand.Shuffle(len(w.creatures),
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
@@ -241,7 +241,7 @@ func (w *World) evolveWorld() {
 		}
 		wg.Add(1)
 		semChannel <- true
-		go w.evolveCreatures(creature, semChannel, &mutex, &wg)
+		go w.moveCreatures(creature, semChannel, &mutex, &wg)
 	}
 	wg.Wait()
 	var newCreatures []*Creature
