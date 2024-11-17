@@ -118,6 +118,17 @@ func (w *World) placeCreatures(ncreatures, creatureId int) {
 		}
 	}
 }
+
+/**
+* @brief Gets neighbours of a given position
+*
+* 4 Direct neighbouring positions(North, West, South and East) are placed inside an array and returned.
+* If a position reaches max or 0 it loops around to the other end of grid.
+*
+* @param x 		X coordinate of the creature
+* @param y		Y coordinate of the creature
+* @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
+ */
 func (w *World) get_neighbours(x, y int) [4]*Creature {
 	movements := [][2]int{
 		{0, -1}, // North
@@ -137,7 +148,19 @@ func (w *World) get_neighbours(x, y int) [4]*Creature {
 	return neighbours
 }
 
-// Moves Creatures
+//////////////////////////////////// DO THE ONE BELOW
+/**
+* @brief Gets neighbours of a given position
+*
+* 4 Direct neighbouring positions(North, West, South and East) are placed inside an array and returned.
+* If a position reaches max or 0 it loops around to the other end of grid.
+*
+* @param x 		X coordinate of the creature
+* @param y		Y coordinate of the creature
+* @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
+ */
+//////////////////////////////////
+
 func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
 	var newX int
 	var newY int
@@ -193,6 +216,15 @@ func (w *World) evolveCreatures(creature *Creature, semChannel chan bool, mutex 
 	<-semChannel
 	wg.Done()
 }
+
+/**
+* @brief Called to itterate the game by 1 chronon
+*
+* This is used to itterate the game state. First it shuffles the creature slice so different creatures would be moved first.
+* Then it creates concurrency tools such as mutexes and channels. It then launches a goroutine for each of the creatures so it can move on the map.
+* It then creates a new Creature slice and appends it with all the Creatures that are still alive. It then sets the creature slice with this new created slice.
+*
+ */
 func (w *World) evolveWorld() {
 	// Shuffles the creature slice
 	rand.Shuffle(len(w.creatures),
@@ -221,6 +253,15 @@ func (w *World) evolveWorld() {
 	w.creatures = newCreatures
 }
 
+/**
+* @brief Gets pointers to empty neighbours
+*
+* 4 Direct neighbouring positions(North, West, South and East) are passed into this function.
+* The the ones that don't contain a fish or shark are returned
+*
+* @param neighbours 	An array with 4 Creature pointers in positions that are neighbouring a given creature.
+* @return 				Returns a slice containing pointers to empty creatures from the neighbours array.
+ */
 func getEmptyNeighbours(neighbours [4]*Creature) []*Creature {
 	var emptyNeighbours []*Creature
 	for i := 0; i < 4; i++ {
@@ -231,10 +272,28 @@ func getEmptyNeighbours(neighbours [4]*Creature) []*Creature {
 	return emptyNeighbours
 }
 
+/**
+* @brief Chooses a random position
+*
+* A slice containing between 1 and 4 Creature pointers is passed in.
+* From that array 1 random neighbour is selected and returned.
+*
+* @param neighbours 	A slice containing Creature pointers containing available positions
+* @return 				Returns a pointer to a Creature struct
+ */
 func randomiseNeighbour(neighbours []*Creature) *Creature {
 	return neighbours[rand.Intn(len(neighbours))]
 }
 
+/**
+* @brief Checks whether any of the neighbours have a fish inside.
+*
+* An array containing Creature pointers to the 4 neighbours of a given position are checked to see whether they have any fish present.
+* If a fish is present true is returned. This function is only used by sharks.
+*
+* @param neighbours 	An Creature pointer array of all the 4 neighbours
+* @return 				Returns a boolean
+ */
 func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
 	foodPresent := false
 	for i := 0; i < 4; i++ {
@@ -245,6 +304,15 @@ func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
 	return foodPresent
 }
 
+/**
+* @brief Gets neighbouring positions that contain fish
+*
+* An array containing Creature pointers to the 4 neighbours of a given position are checked to see whether they have any fish present.
+* If a fish is present they are added to a slice. Then that fish slice is returned.
+*
+* @param neighbours 	An Creature pointer array of all the 4 neighbours
+* @return 				Returns a Creature pointers slice of neighbouring fish.
+ */
 func getFoodNeighbours(neighbours [4]*Creature) []*Creature {
 	var neighbour []*Creature
 	for i := 0; i < 4; i++ {
