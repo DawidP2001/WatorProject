@@ -8,6 +8,8 @@
 // 2. Fix concurrency issue
 // ToDO:
 // 6. Add threads
+// IDEAS:
+// 1. Use a channel for the creature array?
 // --------------------------------------------
 package main
 
@@ -32,7 +34,7 @@ func main() {
 	fishBreed := 2               //Number of time units that pass before a fish can reproduce;
 	sharkBreed := 20             //Number of time units that must pass before a shark can reproduce;
 	starve := 15                 //Period of time a shark can go without food before dying;
-	gridSize := [2]int{250, 250} //Dimensions of world;
+	gridSize := [2]int{150, 150} //Dimensions of world;
 	threads := 0                 //Number of threads to use.
 	g := NewGame(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	if err := ebiten.RunGame(g); err != nil {

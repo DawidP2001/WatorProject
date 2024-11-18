@@ -13,6 +13,7 @@ type World struct {
 	fishBreed  int
 	sharkBreed int
 	starve     int
+	ooo        int
 }
 
 /**
@@ -37,6 +38,7 @@ func newWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]
 		fishBreed:  fishBreed,
 		sharkBreed: sharkBreed,
 		starve:     starve,
+		ooo:        0,
 	}
 	w.fillTheGrid()
 	w.populateWorld(numFish, numShark)
@@ -129,21 +131,21 @@ func (w *World) placeCreatures(ncreatures, creatureId int) {
 * @param y		Y coordinate of the creature
 * @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
  */
-func (w *World) get_neighbours(x, y int) [4]*Creature {
+func (w *World) get_neighbours(x, y int) [4]Creature {
 	movements := [][2]int{
 		{0, -1}, // North
 		{1, 0},  // East
 		{0, 1},  // South
 		{-1, 0}, // West
 	}
-	var neighbours [4]*Creature
+	var neighbours [4]Creature
 	for i, movement := range movements {
 		directionX := movement[0]
 		directionY := movement[1]
 
 		newX := (x + directionX + w.width) % w.width
 		newY := (y + directionY + w.height) % w.height
-		neighbours[i] = w.grid[newX][newY]
+		neighbours[i] = *w.grid[newX][newY]
 	}
 	return neighbours
 }
@@ -161,15 +163,14 @@ func (w *World) get_neighbours(x, y int) [4]*Creature {
  */
 //////////////////////////////////
 
-func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
+func (w *World) moveCreatures(creature *Creature, mutex *sync.Mutex, wg *sync.WaitGroup, neighbours [4]Creature) {
+	mutex.Lock()
 	var newX int
 	var newY int
-	neighbours := w.get_neighbours(creature.x, creature.y)
 	creature.fertility += 1
 	moved := false
 	if creature.id == 2 {
 		if checkIfAnyNeighbourIsFood(neighbours) {
-			mutex.Lock()
 			neighbours := getFoodNeighbours(neighbours)
 			neighbour := randomiseNeighbour(neighbours)
 			newX = neighbour.x
@@ -177,7 +178,6 @@ func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *s
 			creature.energy += 2
 			w.grid[newX][newY].dead = true
 			w.grid[newX][newY] = newCreatureEmpty(newX, newY)
-			mutex.Unlock()
 			moved = true
 		}
 	}
@@ -195,15 +195,12 @@ func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *s
 	}
 	if creature.energy < 0 {
 		creature.dead = true
-		mutex.Lock()
 		w.grid[creature.x][creature.y].id = 0
-		mutex.Unlock()
 	} else if moved {
 		x := creature.x
 		y := creature.y
 		creature.x = newX
 		creature.y = newY
-		mutex.Lock()
 		w.grid[newX][newY] = creature
 		if creature.fertility >= creature.breedTime {
 			creature.fertility = 0
@@ -211,10 +208,9 @@ func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *s
 		} else {
 			w.grid[x][y] = newCreatureEmpty(x, y)
 		}
-		mutex.Unlock()
 	}
-	<-semChannel
-	wg.Done()
+	mutex.Unlock()
+	defer wg.Done()
 }
 
 /**
@@ -225,23 +221,29 @@ func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *s
 * It then creates a new Creature slice and appends it with all the Creatures that are still alive. It then sets the creature slice with this new created slice.
 *
  */
+
 func (w *World) iterateProgram() {
 	// Shuffles the creature slice
 	rand.Shuffle(len(w.creatures),
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
 
-	semChannel := make(chan bool, 16)
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	ncreatures := len(w.creatures)
+	/*
+		buf := make([]byte, 1<<16)    // 64KB buffer size
+		n := runtime.Stack(buf, true) // Capture stack trace of all goroutines
+		fmt.Printf("%s\n", buf[:n])   // Print the stack trace (truncate to valid length)
+	*/
 	for i := 0; i < ncreatures; i++ {
 		creature := w.creatures[i]
 		if creature.dead {
 			continue
 		}
+		neighbours := w.get_neighbours(creature.x, creature.y)
 		wg.Add(1)
-		semChannel <- true
-		go w.moveCreatures(creature, semChannel, &mutex, &wg)
+
+		go w.moveCreatures(creature, &mutex, &wg, neighbours)
 	}
 	wg.Wait()
 	var newCreatures []*Creature
@@ -262,8 +264,8 @@ func (w *World) iterateProgram() {
 * @param neighbours 	An array with 4 Creature pointers in positions that are neighbouring a given creature.
 * @return 				Returns a slice containing pointers to empty creatures from the neighbours array.
  */
-func getEmptyNeighbours(neighbours [4]*Creature) []*Creature {
-	var emptyNeighbours []*Creature
+func getEmptyNeighbours(neighbours [4]Creature) []Creature {
+	var emptyNeighbours []Creature
 	for i := 0; i < 4; i++ {
 		if neighbours[i].id == 0 {
 			emptyNeighbours = append(emptyNeighbours, neighbours[i])
@@ -281,7 +283,7 @@ func getEmptyNeighbours(neighbours [4]*Creature) []*Creature {
 * @param neighbours 	A slice containing Creature pointers containing available positions
 * @return 				Returns a pointer to a Creature struct
  */
-func randomiseNeighbour(neighbours []*Creature) *Creature {
+func randomiseNeighbour(neighbours []Creature) Creature {
 	return neighbours[rand.Intn(len(neighbours))]
 }
 
@@ -294,7 +296,7 @@ func randomiseNeighbour(neighbours []*Creature) *Creature {
 * @param neighbours 	An Creature pointer array of all the 4 neighbours
 * @return 				Returns a boolean
  */
-func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
+func checkIfAnyNeighbourIsFood(neighbours [4]Creature) bool {
 	foodPresent := false
 	for i := 0; i < 4; i++ {
 		if neighbours[i].id == 1 {
@@ -313,8 +315,8 @@ func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
 * @param neighbours 	An Creature pointer array of all the 4 neighbours
 * @return 				Returns a Creature pointers slice of neighbouring fish.
  */
-func getFoodNeighbours(neighbours [4]*Creature) []*Creature {
-	var neighbour []*Creature
+func getFoodNeighbours(neighbours [4]Creature) []Creature {
+	var neighbour []Creature
 	for i := 0; i < 4; i++ {
 		if neighbours[i].id == 1 {
 			neighbour = append(neighbour, neighbours[i])
