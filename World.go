@@ -154,183 +154,82 @@ func (w *World) getAndBlockNeighbours(x, y int) (neighbours [4]*Creature) {
 		newX := (x + directionX + w.width) % w.width
 		newY := (y + directionY + w.height) % w.height
 		neighbours[i] = w.grid[newX][newY]
+		//print("Acquired 1: ", neighbours[i].x, "-", neighbours[i].y, ", ")
 		neighbours[i].usedChan <- true
+		//print("Acquired 2: ", neighbours[i].x, "-", neighbours[i].y, ", ")
 	}
 	return neighbours
 }
+func (w *World) checkIfStillAlive(creature *Creature) bool {
+	switch {
+	case creature.dead:
+		return false
+	case creature != w.grid[creature.x][creature.y]:
+		creature.dead = true
+		return false
+	}
+	return true
+}
 func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	mutex.Lock()
 	creature.usedChan <- true
+	//print("Acquired, ")
 	neighbours := w.getAndBlockNeighbours(creature.x, creature.y)
-	mutex.Unlock()
 	defer wg.Done()
-	var newX int
-	var newY int
-	creature.fertility += 1
-	moved := false
-
-	if creature.id == 2 {
-		if checkIfAnyNeighbourIsFood(neighbours, mutex) {
-			neighbours := getFoodNeighbours(neighbours, mutex)
-			neighbour := randomiseNeighbour(neighbours)
-			creature.energy = w.starve
-			mutex.Lock()
-			newX = neighbour.x
-			newY = neighbour.y
-			w.grid[newX][newY].dead = true
-			w.grid[newX][newY] = newCreatureEmpty(newX, newY)
-			mutex.Unlock()
-			moved = true
-		}
-	}
-	if !moved {
-		emptyNeighbours := getEmptyNeighbours(neighbours, mutex)
-		if len(emptyNeighbours) != 0 {
-			randomNeighbor := randomiseNeighbour(emptyNeighbours)
-			mutex.Lock()
-			newX = randomNeighbor.x
-			newY = randomNeighbor.y
-			mutex.Unlock()
-			if creature.id == 2 {
-				creature.energy--
+	//defer print("Done \n")
+	if w.checkIfStillAlive(creature) {
+		creature.fertility += 1
+		moved := false
+		x := creature.x
+		y := creature.y
+		var neighbour *Creature
+		if creature.id == 2 {
+			if checkIfAnyNeighbourIsFood(neighbours) {
+				neighbours := getFoodNeighbours(neighbours)
+				neighbour = randomiseNeighbour(neighbours)
+				creature.energy = w.starve
+				w.grid[neighbour.x][neighbour.y].dead = true
+				moved = true
 			}
-			moved = true
 		}
-	}
-	if creature.energy < 0 {
-		creature.dead = true
-		mutex.Lock()
-		w.grid[creature.x][creature.y].id = 0
-		mutex.Unlock()
-	} else if moved {
-		x := creature.x
-		y := creature.y
-		creature.x = newX
-		creature.y = newY
-		mutex.Lock()
-		w.grid[newX][newY] = creature
-		mutex.Unlock()
-		if creature.fertility >= creature.breedTime {
-			creature.fertility = 0
-			w.spawnCreature(creature.id, x, y, mutex)
-		} else {
-			mutex.Lock()
-			w.grid[x][y] = newCreatureEmpty(x, y)
-			mutex.Unlock()
-		}
-	}
-	<-semChannel
-}
-
-func (w *World) moveFish(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	defer wg.Done()
-	creature.beingUsed = true
-	var newX int
-	var newY int
-	neighbours := w.get_neighbours(creature.x, creature.y, mutex)
-	emptyNeighbours := getEmptyNeighbours(neighbours, mutex)
-	creature.fertility += 1
-
-	if len(emptyNeighbours) != 0 {
-		randomNeighbor := randomiseNeighbour(emptyNeighbours)
-		mutex.Lock()
-		newX = randomNeighbor.x
-		newY = randomNeighbor.y
-		mutex.Unlock()
-		x := creature.x
-		y := creature.y
-		creature.x = newX
-		creature.y = newY
-		mutex.Lock()
-		/*
-			if w.grid[newX][newY].id == 0 && !w.grid[newX][newY].beingUsed {
-				w.grid[newX][newY] = creature
-				mutex.Unlock()
-				if creature.fertility >= creature.breedTime {
-					creature.fertility = 0
-					w.spawnCreature(creature.id, x, y, mutex)
-				} else {
-					mutex.Lock()
-					if w.grid[newX][newY].id == 0 && !w.grid[newX][newY].beingUsed {
-						w.grid[x][y] = newCreatureEmpty(x, y)
-					}
-					mutex.Unlock()
+		if !moved {
+			emptyNeighbours := getEmptyNeighbours(neighbours)
+			if len(emptyNeighbours) != 0 {
+				neighbour = randomiseNeighbour(emptyNeighbours)
+				if creature.id == 2 {
+					creature.energy--
 				}
+				moved = true
+			}
+		}
+		if creature.energy < 0 {
+			creature.dead = true
+			w.grid[x][y] = newCreatureEmpty(x, y)
+			<-neighbour.usedChan
+			//print("Released 11, ")
+		} else if moved {
+			creature.x = neighbour.x
+			creature.y = neighbour.y
+			w.grid[neighbour.x][neighbour.y] = creature
+			if creature.fertility >= creature.breedTime {
+				creature.fertility = 0
+				w.spawnCreature(creature.id, x, y, mutex)
 			} else {
-				mutex.Unlock()
+				w.grid[x][y] = newCreatureEmpty(x, y)
 			}
-		*/
+			<-neighbour.usedChan
+			//print("Released 12, ")
+		}
+	} else {
+		for i := 0; i < 4; i++ {
+			<-neighbours[i].usedChan
+			//print("Released 2, ")
+		}
+	}
 
-		w.grid[newX][newY] = creature
-		mutex.Unlock()
-		if creature.fertility >= creature.breedTime {
-			creature.fertility = 0
-			w.spawnCreature(creature.id, x, y, mutex)
-		} else {
-			mutex.Lock()
-			w.grid[x][y] = newCreatureEmpty(x, y)
-			mutex.Unlock()
-		}
-
-	}
-	<-semChannel
-}
-func (w *World) moveShark(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	defer wg.Done()
-	creature.beingUsed = true
-	moved := false
-	var newX int
-	var newY int
-	neighbours := w.get_neighbours(creature.x, creature.y, mutex)
-	creature.fertility += 1
-	if checkIfAnyNeighbourIsFood(neighbours, mutex) {
-		neighbours := getFoodNeighbours(neighbours, mutex)
-		neighbour := randomiseNeighbour(neighbours)
-		mutex.Lock()
-		newX = neighbour.x
-		newY = neighbour.y
-		mutex.Unlock()
-		creature.energy = w.starve
-		mutex.Lock()
-		//	if w.grid[newX][newY].id == 1 && !w.grid[newX][newY].beingUsed {
-		w.grid[newX][newY].dead = true
-		w.grid[newX][newY] = newCreatureEmpty(newX, newY)
-		//	}
-		mutex.Unlock()
-		moved = true
-	}
-	if !moved {
-		emptyNeighbours := getEmptyNeighbours(neighbours, mutex)
-		if len(emptyNeighbours) != 0 {
-			randomNeighbor := randomiseNeighbour(emptyNeighbours)
-			newX = randomNeighbor.x
-			newY = randomNeighbor.y
-			if creature.id == 2 {
-				creature.energy--
-			}
-			moved = true
-		}
-	}
-	if creature.energy < 0 {
-		creature.dead = true
-		mutex.Lock()
-		w.grid[creature.x][creature.y].id = 0
-		mutex.Unlock()
-	} else if moved {
-		x := creature.x
-		y := creature.y
-		creature.x = newX
-		creature.y = newY
-		mutex.Lock()
-		w.grid[newX][newY] = creature
-		mutex.Unlock()
-		if creature.fertility >= creature.breedTime {
-			creature.fertility = 0
-			w.spawnCreature(creature.id, x, y, mutex)
-		} else {
-			w.grid[x][y] = newCreatureEmpty(x, y)
-		}
-	}
+	//print("Released 3, ")
+	<-creature.usedChan
+	//print("\n")
+	//print("Done \n")
 	<-semChannel
 }
 
@@ -347,7 +246,8 @@ func (w *World) iterateProgram() {
 	rand.Shuffle(len(w.creatures),
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
 
-	semChannel := make(chan bool, 16)
+	// Works with 1 so far
+	semChannel := make(chan bool, 1)
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	ncreatures := len(w.creatures)
@@ -360,6 +260,7 @@ func (w *World) iterateProgram() {
 		}
 		wg.Add(1)
 		semChannel <- true
+		//print("Go \n")
 		go w.moveCreatures(creature, semChannel, &mutex, &wg)
 	}
 	wg.Wait()
@@ -373,37 +274,6 @@ func (w *World) iterateProgram() {
 }
 
 /**
-* @brief Gets neighbours of a given position
-*
-* 4 Direct neighbouring positions(North, West, South and East) are placed inside an array and returned.
-* If a position reaches max or 0 it loops around to the other end of grid.
-*
-* @param x 		X coordinate of the creature
-* @param y		Y coordinate of the creature
-* @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
- */
-func (w *World) get_neighbours(x, y int, mutex *sync.Mutex) [4]*Creature {
-	movements := [][2]int{
-		{0, -1}, // North
-		{1, 0},  // East
-		{0, 1},  // South
-		{-1, 0}, // West
-	}
-	var neighbours [4]*Creature
-	for i, movement := range movements {
-		directionX := movement[0]
-		directionY := movement[1]
-
-		newX := (x + directionX + w.width) % w.width
-		newY := (y + directionY + w.height) % w.height
-		mutex.Lock()
-		neighbours[i] = w.grid[newX][newY]
-		mutex.Unlock()
-	}
-	return neighbours
-}
-
-/**
 * @brief Gets pointers to empty neighbours
 *
 * 4 Direct neighbouring positions(North, West, South and East) are passed into this function.
@@ -412,14 +282,15 @@ func (w *World) get_neighbours(x, y int, mutex *sync.Mutex) [4]*Creature {
 * @param neighbours 	An array with 4 Creature pointers in positions that are neighbouring a given creature.
 * @return 				Returns a slice containing pointers to empty creatures from the neighbours array.
  */
-func getEmptyNeighbours(neighbours [4]*Creature, mutex *sync.Mutex) []*Creature {
+func getEmptyNeighbours(neighbours [4]*Creature) []*Creature {
 	var emptyNeighbours []*Creature
 	for i := 0; i < 4; i++ {
-		mutex.Lock()
 		if neighbours[i].id == 0 {
 			emptyNeighbours = append(emptyNeighbours, neighbours[i])
+		} else {
+			<-neighbours[i].usedChan
+			//print("Released 4, ")
 		}
-		mutex.Unlock()
 	}
 	return emptyNeighbours
 }
@@ -434,7 +305,14 @@ func getEmptyNeighbours(neighbours [4]*Creature, mutex *sync.Mutex) []*Creature 
 * @return 				Returns a pointer to a Creature struct
  */
 func randomiseNeighbour(neighbours []*Creature) *Creature {
-	return neighbours[rand.Intn(len(neighbours))]
+	neighbour := neighbours[rand.Intn(len(neighbours))]
+	for i := 0; i < len(neighbours); i++ {
+		if neighbour != neighbours[i] {
+			<-neighbours[i].usedChan
+			//print("Released 5, ")
+		}
+	}
+	return neighbour
 }
 
 /**
@@ -446,14 +324,12 @@ func randomiseNeighbour(neighbours []*Creature) *Creature {
 * @param neighbours 	An Creature pointer array of all the 4 neighbours
 * @return 				Returns a boolean
  */
-func checkIfAnyNeighbourIsFood(neighbours [4]*Creature, mutex *sync.Mutex) bool {
+func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
 	foodPresent := false
 	for i := 0; i < 4; i++ {
-		mutex.Lock()
 		if neighbours[i].id == 1 {
 			foodPresent = true
 		}
-		mutex.Unlock()
 	}
 	return foodPresent
 }
@@ -467,14 +343,15 @@ func checkIfAnyNeighbourIsFood(neighbours [4]*Creature, mutex *sync.Mutex) bool 
 * @param neighbours 	An Creature pointer array of all the 4 neighbours
 * @return 				Returns a Creature pointers slice of neighbouring fish.
  */
-func getFoodNeighbours(neighbours [4]*Creature, mutex *sync.Mutex) []*Creature {
+func getFoodNeighbours(neighbours [4]*Creature) []*Creature {
 	var neighbour []*Creature
 	for i := 0; i < 4; i++ {
-		mutex.Lock()
 		if neighbours[i].id == 1 {
 			neighbour = append(neighbour, neighbours[i])
+		} else {
+			<-neighbours[i].usedChan
+			//print("Released 6, ")
 		}
-		mutex.Unlock()
 	}
 	return neighbour
 }

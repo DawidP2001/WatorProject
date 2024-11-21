@@ -25,7 +25,7 @@ import (
  */
 func main() {
 	ebiten.SetWindowTitle("Wa-Tor")
-	ebiten.SetTPS(20)
+	ebiten.SetTPS(100)
 
 	numShark := 500              //Starting population of sharks;
 	numFish := 1000              //Starting population of fish;
