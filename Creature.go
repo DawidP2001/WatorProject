@@ -11,6 +11,8 @@ type Creature struct {
 	breedTime int
 	fertility int
 	dead      bool
+	beingUsed bool
+	usedChan  chan bool
 }
 
 /**
@@ -34,6 +36,8 @@ func newCreature(id, x, y, initialEnergy, breedTime int) *Creature {
 		breedTime: breedTime,
 		fertility: 0,
 		dead:      false,
+		beingUsed: false,
+		usedChan:  make(chan bool, 1),
 	}
 }
 
@@ -48,8 +52,10 @@ func newCreature(id, x, y, initialEnergy, breedTime int) *Creature {
  */
 func newCreatureEmpty(x, y int) *Creature {
 	return &Creature{
-		id: 0,
-		x:  x,
-		y:  y,
+		id:        0,
+		x:         x,
+		y:         y,
+		beingUsed: false,
+		usedChan:  make(chan bool, 1),
 	}
 }

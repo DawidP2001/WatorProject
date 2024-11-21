@@ -25,11 +25,11 @@ import (
  */
 func main() {
 	ebiten.SetWindowTitle("Wa-Tor")
-	ebiten.SetTPS(100)
+	ebiten.SetTPS(20)
 
-	numShark := 100              //Starting population of sharks;
-	numFish := 100               //Starting population of fish;
-	fishBreed := 2               //Number of time units that pass before a fish can reproduce;
+	numShark := 500              //Starting population of sharks;
+	numFish := 1000              //Starting population of fish;
+	fishBreed := 10              //Number of time units that pass before a fish can reproduce;
 	sharkBreed := 20             //Number of time units that must pass before a shark can reproduce;
 	starve := 15                 //Period of time a shark can go without food before dying;
 	gridSize := [2]int{250, 250} //Dimensions of world;
