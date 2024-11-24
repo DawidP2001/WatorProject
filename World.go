@@ -147,36 +147,25 @@ func (w *World) placeCreatures(ncreatures, creatureId int) {
 * @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
  */
 //////////////////////////////////
-func (w *World) getAndBlockNeighbours(x, y int) (neighbours [4]*Creature) {
-	for i, movement := range movements {
+func (w *World) getAndBlockNeighbours(x, y int) (neighbours []*Creature) {
+	for _, movement := range movements {
 		directionX := movement[0]
 		directionY := movement[1]
 		newX := (x + directionX + w.width) % w.width
 		newY := (y + directionY + w.height) % w.height
-		neighbours[i] = w.grid[newX][newY]
-		//print("Acquired 1: ", neighbours[i].x, "-", neighbours[i].y, ", ")
-		neighbours[i].usedChan <- true
-		//print("Acquired 2: ", neighbours[i].x, "-", neighbours[i].y, ", ")
+		select {
+		case w.grid[newX][newY].usedChan <- true:
+			neighbours = append(neighbours, w.grid[newX][newY])
+		default:
+			// Nothing happens
+		}
 	}
 	return neighbours
 }
-func (w *World) checkIfStillAlive(creature *Creature) bool {
-	switch {
-	case creature.dead:
-		return false
-	case creature != w.grid[creature.x][creature.y]:
-		creature.dead = true
-		return false
-	}
-	return true
-}
 func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	creature.usedChan <- true
-	//print("Acquired, ")
-	neighbours := w.getAndBlockNeighbours(creature.x, creature.y)
-	defer wg.Done()
-	//defer print("Done \n")
-	if w.checkIfStillAlive(creature) {
+	select {
+	case creature.usedChan <- true:
+		neighbours := w.getAndBlockNeighbours(creature.x, creature.y)
 		creature.fertility += 1
 		moved := false
 		x := creature.x
@@ -205,7 +194,6 @@ func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *s
 			creature.dead = true
 			w.grid[x][y] = newCreatureEmpty(x, y)
 			<-neighbour.usedChan
-			//print("Released 11, ")
 		} else if moved {
 			creature.x = neighbour.x
 			creature.y = neighbour.y
@@ -217,19 +205,12 @@ func (w *World) moveCreatures(creature *Creature, semChannel chan bool, mutex *s
 				w.grid[x][y] = newCreatureEmpty(x, y)
 			}
 			<-neighbour.usedChan
-			//print("Released 12, ")
 		}
-	} else {
-		for i := 0; i < 4; i++ {
-			<-neighbours[i].usedChan
-			//print("Released 2, ")
-		}
+		<-creature.usedChan
+	default:
+		// Do nothing
 	}
-
-	//print("Released 3, ")
-	<-creature.usedChan
-	//print("\n")
-	//print("Done \n")
+	wg.Done()
 	<-semChannel
 }
 
@@ -260,7 +241,6 @@ func (w *World) iterateProgram() {
 		}
 		wg.Add(1)
 		semChannel <- true
-		//print("Go \n")
 		go w.moveCreatures(creature, semChannel, &mutex, &wg)
 	}
 	wg.Wait()
@@ -282,9 +262,8 @@ func (w *World) iterateProgram() {
 * @param neighbours 	An array with 4 Creature pointers in positions that are neighbouring a given creature.
 * @return 				Returns a slice containing pointers to empty creatures from the neighbours array.
  */
-func getEmptyNeighbours(neighbours [4]*Creature) []*Creature {
-	var emptyNeighbours []*Creature
-	for i := 0; i < 4; i++ {
+func getEmptyNeighbours(neighbours []*Creature) (emptyNeighbours []*Creature) {
+	for i := 0; i < len(neighbours); i++ {
 		if neighbours[i].id == 0 {
 			emptyNeighbours = append(emptyNeighbours, neighbours[i])
 		} else {
@@ -324,9 +303,9 @@ func randomiseNeighbour(neighbours []*Creature) *Creature {
 * @param neighbours 	An Creature pointer array of all the 4 neighbours
 * @return 				Returns a boolean
  */
-func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
+func checkIfAnyNeighbourIsFood(neighbours []*Creature) bool {
 	foodPresent := false
-	for i := 0; i < 4; i++ {
+	for i := 0; i < len(neighbours); i++ {
 		if neighbours[i].id == 1 {
 			foodPresent = true
 		}
@@ -343,9 +322,9 @@ func checkIfAnyNeighbourIsFood(neighbours [4]*Creature) bool {
 * @param neighbours 	An Creature pointer array of all the 4 neighbours
 * @return 				Returns a Creature pointers slice of neighbouring fish.
  */
-func getFoodNeighbours(neighbours [4]*Creature) []*Creature {
+func getFoodNeighbours(neighbours []*Creature) []*Creature {
 	var neighbour []*Creature
-	for i := 0; i < 4; i++ {
+	for i := 0; i < len(neighbours); i++ {
 		if neighbours[i].id == 1 {
 			neighbour = append(neighbour, neighbours[i])
 		} else {
