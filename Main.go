@@ -1,19 +1,14 @@
-//--------------------------------------------
+// --------------------------------------------
 // Author: Dawid Pionk
 // Created on 21/10/24
 // Description:
 // A solution to the dinining philosophers problem
 // Issues:
+// 1. Game can get bit laggy
 // ToDO:
-// 5. Add dimensionality
-// 6. Add threads
-// Mkae grid resizable
-//--------------------------------------------
-// Note: A lot of the comments were placed while I was learning more about the language
-
-// Idea to fix the issue in this branch
-// 1. Create fish array and itterate through that array to update positions instead of the nested for loop
-
+// Took some logic for this program from https://scipython.com/blog/wa-tor-world/
+// Especially for the iteration side of the program
+// --------------------------------------------
 package main
 
 import (
@@ -22,18 +17,23 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+/**
+* @brief This is the main function of the Wa-Tor program
+*
+* This the main function of the program. It sets up the game title and FPS.
+* Makes new instance of the game struct and passed several parameters to its constructor.
+ */
 func main() {
 	ebiten.SetWindowTitle("Wa-Tor")
-	ebiten.SetTPS(30)
+	ebiten.SetTPS(100)
 
-	numShark := 100              //Starting population of sharks;
-	numFish := 100               //Starting population of fish;
-	fishBreed := 5               //Number of time units that pass before a fish can reproduce;
-	sharkBreed := 25             //Number of time units that must pass before a shark can reproduce;
-	starve := 20                 //Period of time a shark can go without food before dying;
+	numShark := 500              //Starting population of sharks;
+	numFish := 1000              //Starting population of fish;
+	fishBreed := 10              //Number of time units that pass before a fish can reproduce;
+	sharkBreed := 20             //Number of time units that must pass before a shark can reproduce;
+	starve := 15                 //Period of time a shark can go without food before dying;
 	gridSize := [2]int{250, 250} //Dimensions of world;
-	threads := 0                 //Number of threads to use.
-
+	threads := 8                 //Number of threads to use.
 	g := NewGame(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

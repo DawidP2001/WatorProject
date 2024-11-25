@@ -8,7 +8,7 @@ xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
 struct \{\\
 \} \mbox{\hyperlink{_creature_8go_ac6cfb73c1c33729c6696ce9e41780c13}{newCreature}} (id, x, y, initialEnergy, breedTime int) \texorpdfstring{$\ast$}{*}Creature\\
 
-\end{tabbing}\begin{DoxyCompactList}\small\item\em Creates a new struct of type Creature. \end{DoxyCompactList}\item 
+\end{tabbing}\begin{DoxyCompactList}\small\item\em A Creature on the planet. \end{DoxyCompactList}\item 
 func \mbox{\hyperlink{_creature_8go_af29afb3d54a4217182b239711f597bec}{new\+Creature\+Empty}} (x, y int) \texorpdfstring{$\ast$}{*}Creature
 \begin{DoxyCompactList}\small\item\em Creates a new struct of type Creature that will be used as an empty location on the grid. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
@@ -22,7 +22,11 @@ package main type Creature struct @0 new\+Creature (\begin{DoxyParamCaption}\ite
 
 
 
-Creates a new struct of type Creature. 
+A Creature on the planet. 
+
+Creates a new struct of type Creature
+
+This function is a constructor for the struct Creature, it takes several int variables and assigns it to this new instance.
 
 
 \begin{DoxyParams}{Parameters}
@@ -49,6 +53,8 @@ func new\+Creature\+Empty (\begin{DoxyParamCaption}\item[{x}]{}{, }\item[{y int}
 
 
 Creates a new struct of type Creature that will be used as an empty location on the grid. 
+
+This function is a constructor for the struct Creature, it takes several int variables and assigns it to this new instance.
 
 
 \begin{DoxyParams}{Parameters}

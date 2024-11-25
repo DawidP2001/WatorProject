@@ -95,7 +95,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ac6cfb73c1c33729c6696ce9e41780c13" id="r_ac6cfb73c1c33729c6696ce9e41780c13"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6cfb73c1c33729c6696ce9e41780c13" id="r_ac6cfb73c1c33729c6696ce9e41780c13"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6cfb73c1c33729c6696ce9e41780c13">newCreature</a> (id, x, y, initialEnergy, breedTime int) *Creature&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:ac6cfb73c1c33729c6696ce9e41780c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new struct of type Creature.  <br /></td></tr>
+<tr class="memdesc:ac6cfb73c1c33729c6696ce9e41780c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Creature on the planet.  <br /></td></tr>
 <tr class="separator:ac6cfb73c1c33729c6696ce9e41780c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af29afb3d54a4217182b239711f597bec" id="r_af29afb3d54a4217182b239711f597bec"><td class="memItemLeft" align="right" valign="top">func&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af29afb3d54a4217182b239711f597bec">newCreatureEmpty</a> (x, y int) *Creature</td></tr>
 <tr class="memdesc:af29afb3d54a4217182b239711f597bec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new struct of type Creature that will be used as an empty location on the grid.  <br /></td></tr>
@@ -136,7 +136,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a new struct of type Creature. </p>
+<p>A Creature on the planet. </p>
+<p>Creates a new struct of type Creature</p>
+<p>This function is a constructor for the struct Creature, it takes several int variables and assigns it to this new instance.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">id</td><td>Stores what type of creature it is (0-none, 1-Fish, 2-Shark) </td></tr>
@@ -171,6 +173,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a new struct of type Creature that will be used as an empty location on the grid. </p>
+<p>This function is a constructor for the struct Creature, it takes several int variables and assigns it to this new instance.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>X coordinate </td></tr>
