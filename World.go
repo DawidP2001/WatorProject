@@ -94,7 +94,7 @@ func (w *World) spawnCreature(creatureId, x, y int, mutex *sync.Mutex) {
 		creatureId, x, y,
 		w.starve,
 		breedTime)
-	mutex.Lock()
+	mutex.Lock() // FIX THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	w.creatures = append(w.creatures, creature)
 	w.grid[x][y] = creature
 	mutex.Unlock()
@@ -228,20 +228,18 @@ func (w *World) iterateProgram() {
 		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
 
 	// Works with 1 so far
-	semChannel := make(chan bool, 1)
+	semChannel := make(chan bool, 8)
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	ncreatures := len(w.creatures)
 	for i := 0; i < ncreatures; i++ {
-		mutex.Lock()
 		creature := w.creatures[i]
-		mutex.Unlock()
 		if creature.dead {
 			continue
 		}
 		wg.Add(1)
 		semChannel <- true
-		go w.moveCreatures(creature, semChannel, &mutex, &wg)
+		go w.iterateCreatures(creature, semChannel, &mutex, &wg)
 	}
 	wg.Wait()
 	var newCreatures []*Creature
