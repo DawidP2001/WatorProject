@@ -2,6 +2,15 @@
 2. Authors of Project: Dawid Pionk
 3. How to install project: download from [here](https://github.com/DawidP2001/ConDevLabs/tree/main/Lab06-DiningPhilosophers)
 4. List of required Libraries in golang:
-    i.  Nested Numeric
-    ii. Nested Numeric
-5. List of files and what they contain: DiningPhilosophers.go - the program for this exerise
+    i.      log
+    ii.     github.com/hajimehoshi/ebiten/v2
+    iii.    math/rand
+    iv.     sync
+    v.      time
+    vi.     image/color
+5. List of files and what they contain: 
+    i.    Main.go        - Main file of the program where execution starts
+    ii.   World.go       - File containing the main logic of the program and the grid it exicts on.
+    iii.  Constants.go   - Contains some constants used by the program
+    iv.   Creatures.go   - Contains the struct for the creatures present in the world
+    v.    Game.go        - Contains logic for updating the world as well as drawing it 
