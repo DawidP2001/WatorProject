@@ -138,7 +138,6 @@ func (w *World) placeCreatures(ncreatures, creatureId int) {
 	}
 }
 
-//////////////////////////////////// DO THE ONE BELOW
 /**
 * @brief Gets neighbours of a given position
 *
@@ -149,7 +148,6 @@ func (w *World) placeCreatures(ncreatures, creatureId int) {
 * @param y		Y coordinate of the creature
 * @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
  */
-//////////////////////////////////
 func (w *World) getNeighbours(x, y int) (neighbours [4]*Creature) {
 	for i, movement := range movements {
 		directionX := movement[0]
@@ -230,10 +228,13 @@ func getEmptyNeighbours(neighbours [4]*Creature) (emptyNeighbours []*Creature) {
 /**
 * @brief iterates all the creatures present on the creature slice
 *
-* 4 Direct neighbouring positions(North, West, South and East) are passed into this function.
-* The the ones that don't contain a fish or shark are returned
+* This method is used to iterate creatures concurrently through the grid. It is both used by sharks and fish.
+* Concurrency in this function is implemented using mainly buffered channels, mutex lock and a wait group.
 *
-* @param neighbours 	An array with 4 Creature pointers in positions that are neighbouring a given creature.
+* @param 	creature 	A pointer to a creature that needs to be iterated
+* @param 	semChannel 	A buffered channel used as a way to implement threads
+* @param 	mutex 		A mutex Lock, used only to be passed into spawning creatures function
+* @param 	wg 			A weight group synchronisation tool
  */
 func (w *World) iterateCreatures(creature *Creature, semChannel chan bool, mutex *sync.Mutex, wg *sync.WaitGroup) {
 	neighbours := w.getNeighbours(creature.x, creature.y)             // Gets 4 nearby grid neighbours
