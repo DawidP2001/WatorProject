@@ -25,7 +25,7 @@ type Game struct {
 * @return 				A pointer towards a newly created struct of type Game
  */
 func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int, threads int) *Game {
-	w := newWorld(numShark, numFish, fishBreed, sharkBreed, starve, gridSize)
+	w := newWorld(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	return &Game{
 		world: w,
 	}

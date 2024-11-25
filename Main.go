@@ -4,10 +4,10 @@
 // Description:
 // A solution to the dinining philosophers problem
 // Issues:
-// 1. Game sometimes crashes/Freezes
-// 2. Fix concurrency issue
+// 1. Game can get bit laggy
 // ToDO:
-// 6. Add threads
+// Took some logic for this program from https://scipython.com/blog/wa-tor-world/
+// Especially for the iteration side of the program
 // --------------------------------------------
 package main
 
@@ -33,7 +33,7 @@ func main() {
 	sharkBreed := 20             //Number of time units that must pass before a shark can reproduce;
 	starve := 15                 //Period of time a shark can go without food before dying;
 	gridSize := [2]int{250, 250} //Dimensions of world;
-	threads := 0                 //Number of threads to use.
+	threads := 8                 //Number of threads to use.
 	g := NewGame(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
