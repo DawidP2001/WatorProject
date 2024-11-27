@@ -1,6 +1,6 @@
 1. Project License: Wa-Tor Concurrent © 2024 by Dawid Pionk is licensed under CC BY-NC-SA 4.0 
 2. Authors of Project: Dawid Pionk
-3. How to install project: download from [here](https://github.com/DawidP2001/ConDevLabs/tree/main/Lab06-DiningPhilosophers)
+3. How to install project: download from [here](https://github.com/DawidP2001/WatorProject)
 4. List of required Libraries in golang:
     i.      log
     ii.     github.com/hajimehoshi/ebiten/v2
