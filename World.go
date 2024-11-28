@@ -3,7 +3,6 @@ package main
 import (
 	"math/rand"
 	"sync"
-	"time"
 )
 
 type World struct {
@@ -291,7 +290,7 @@ func (w *World) iterateCreatures(creature *Creature, semChannel chan bool, mutex
 				<-neighbour.usedChan
 			}
 			<-creature.usedChan
-		case <-time.After(timeout):
+		default:
 		}
 	}
 	wg.Done()
