@@ -2,7 +2,7 @@
 // Author: Dawid Pionk
 // Created on 21/10/24
 // Description:
-// A solution to the dinining philosophers problem
+// A Wator solution using concurrency
 // Issues:
 // 1. Game can get bit laggy
 // ToDO:
@@ -12,6 +12,7 @@
 package main
 
 import (
+	"WatorProject/Wator"
 	"log"
 	"runtime"
 
@@ -24,6 +25,8 @@ import (
 * This the main function of the program. It sets up the game title and FPS.
 * Makes new instance of the game struct and passed several parameters to its constructor.
  */
+
+// Main Function of the program
 func main() {
 	ebiten.SetWindowTitle("Wa-Tor")
 
@@ -33,9 +36,9 @@ func main() {
 	sharkBreed := 20             //Number of time units that must pass before a shark can reproduce;
 	starve := 15                 //Period of time a shark can go without food before dying;
 	gridSize := [2]int{250, 250} //Dimensions of world;
-	threads := 12                //Number of threads to use.
+	threads := 1                 //Number of threads to use.
 	runtime.GOMAXPROCS(threads)
-	g := NewGame(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
+	g := Wator.NewGame(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

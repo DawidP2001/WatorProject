@@ -1,4 +1,4 @@
-package main
+package Wator
 
 import (
 	"math/rand"

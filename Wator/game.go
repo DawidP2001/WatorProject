@@ -1,13 +1,17 @@
-package main
+package Wator
 
 import (
 	"image/color"
+	"os"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
-	world *World
+	world     *World
+	chronon   int
+	startTime time.Time
 }
 
 /**
@@ -27,7 +31,9 @@ type Game struct {
 func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int, threads int) *Game {
 	w := newWorld(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	return &Game{
-		world: w,
+		world:     w,
+		chronon:   0,
+		startTime: time.Now(),
 	}
 }
 
@@ -39,6 +45,13 @@ func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]i
 * @return 				Returns a nil error
  */
 func (g *Game) Update() error {
+	g.chronon++
+	if g.chronon == 1000 {
+		start := time.Unix(int64(g.startTime), 0)
+		length := time.Since(start)
+		print(length)
+		os.Exit(0)
+	}
 	g.world.iterateProgram()
 	return nil
 }

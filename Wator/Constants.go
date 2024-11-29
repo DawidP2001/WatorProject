@@ -1,4 +1,4 @@
-package main
+package Wator
 
 var movements = [4][2]int{
 	{0, -1}, // North

@@ -1,8 +1,6 @@
-package main
+package Wator
 
-/**
 // @brief 				A Creature on the planet
-*/
 type Creature struct {
 	id        int
 	x         int

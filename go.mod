@@ -1,4 +1,4 @@
-module github.com/DawidP2001/WatorProject
+module WatorProject
 
 go 1.23.1
 
