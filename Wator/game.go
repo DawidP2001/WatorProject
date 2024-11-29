@@ -47,8 +47,7 @@ func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]i
 func (g *Game) Update() error {
 	g.chronon++
 	if g.chronon == 1000 {
-		start := time.Unix(int64(g.startTime), 0)
-		length := time.Since(start)
+		length := time.Since(g.startTime)
 		print(length)
 		os.Exit(0)
 	}
