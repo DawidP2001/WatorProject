@@ -24,7 +24,7 @@ type Creature struct {
 * @param 	breedTime 		When this fertility level is reached the creature reproduces
 * @return 					A pointer towards a newly created struct of type Creature
  */
-func newCreature(id, x, y, initialEnergy, breedTime int) *Creature {
+func NewCreature(id, x, y, initialEnergy, breedTime int) *Creature {
 	return &Creature{
 		id:        id,
 		x:         x,
@@ -46,7 +46,7 @@ func newCreature(id, x, y, initialEnergy, breedTime int) *Creature {
 * @param y Y coordinate
 * @return A pointer towards a newly created struct of type Creature that is of type 0
  */
-func newCreatureEmpty(x, y int) *Creature {
+func NewCreatureEmpty(x, y int) *Creature {
 	return &Creature{
 		id:       0,
 		x:        x,

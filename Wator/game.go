@@ -2,16 +2,13 @@ package Wator
 
 import (
 	"image/color"
-	"os"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
-	world     *World
-	chronon   int
-	startTime time.Time
+	world   *World
+	chronon int
 }
 
 /**
@@ -29,11 +26,10 @@ type Game struct {
 * @return 				A pointer towards a newly created struct of type Game
  */
 func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]int, threads int) *Game {
-	w := newWorld(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
+	w := NewWorld(numShark, numFish, fishBreed, sharkBreed, starve, gridSize, threads)
 	return &Game{
-		world:     w,
-		chronon:   0,
-		startTime: time.Now(),
+		world:   w,
+		chronon: 0,
 	}
 }
 
@@ -46,12 +42,7 @@ func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]i
  */
 func (g *Game) Update() error {
 	g.chronon++
-	if g.chronon == 1000 {
-		length := time.Since(g.startTime)
-		print(length)
-		os.Exit(0)
-	}
-	g.world.iterateProgram()
+	g.world.IterateProgram()
 	return nil
 }
 
@@ -64,7 +55,7 @@ func (g *Game) Update() error {
  */
 func (g *Game) Draw(screen *ebiten.Image) {
 	ebiten.SetWindowSize(g.world.width*2, g.world.height*2)
-	g.drawGrid(screen)
+	g.DrawGrid(screen)
 }
 
 /**
@@ -74,7 +65,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 *
 * @param screen			A pointer to an ebiten.Image object containing the map
  */
-func (g *Game) drawGrid(screen *ebiten.Image) {
+func (g *Game) DrawGrid(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0, 0, 255, 255})
 	for i := 0; i < g.world.width; i++ {
 		for j := 0; j < g.world.height; j++ {
