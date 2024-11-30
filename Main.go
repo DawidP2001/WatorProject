@@ -3,9 +3,6 @@
 // Created on 21/10/24
 // Description:
 // A Wator solution using concurrency
-// Issues:
-// 1. Game can get bit laggy
-// ToDO:
 // Took some logic for this program from https://scipython.com/blog/wa-tor-world/
 // Especially for the iteration side of the program
 // --------------------------------------------
