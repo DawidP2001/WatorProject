@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// This struct contains information about he grid(planet) the game takes place in
 type World struct {
 	width      int
 	height     int
@@ -148,7 +149,7 @@ func (w *World) PlaceCreatures(ncreatures, creatureId int) {
 * @return 		Returns a pointer array of 4 of the direct neighbours of a given creature
  */
 func (w *World) GetNeighbours(x, y int) (neighbours [4]*Creature) {
-	for i, movement := range movements {
+	for i, movement := range Movements {
 		directionX := movement[0]
 		directionY := movement[1]
 		newX := (x + directionX + w.width) % w.width

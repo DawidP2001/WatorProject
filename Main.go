@@ -19,13 +19,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-/**
-* @brief This is the main function of the Wa-Tor program
-*
-* This the main function of the program. It sets up the game title and FPS.
-* Makes new instance of the game struct and passed several parameters to its constructor.
- */
-
 // Main Function of the program
 func main() {
 	ebiten.SetWindowTitle("Wa-Tor")

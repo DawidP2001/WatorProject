@@ -5,14 +5,17 @@
     ii.  Run "go init Wator"
     iii. Run "go mod tidy"
     iv.  Run "go run main.go"
-4. List of required Libraries in golang:
+4. To View the documentation:
+    i. Simply type godoc in the terminal for the directory for this project
+    ii. Go to http://localhost:6060/
+5. List of required Libraries in golang:
     i.      log
     ii.     github.com/hajimehoshi/ebiten/v2
     iii.    math/rand
     iv.     sync
     v.      time
     vi.     image/color
-5. List of files and what they contain: 
+6. List of files and what they contain: 
     i.    Main.go        - Main file of the program where execution starts
     ii.   World.go       - File containing the main logic of the program and the grid it exicts on.
     iii.  Constants.go   - Contains some constants used by the program
