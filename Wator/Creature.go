@@ -2,14 +2,14 @@ package Wator
 
 // A Creature on the planet
 type Creature struct {
-	id        int
-	x         int
-	y         int
-	energy    int
-	breedTime int
-	fertility int
-	dead      bool
-	usedChan  chan bool
+	Id        int       // Holds the value that identifies the species of the creature
+	X         int       // Holds the X Coordinate
+	Y         int       // Holds the Y coordinate
+	Energy    int       // If its a shark stores the amount of chronons it can move before it dies
+	BreedTime int       // Stores the time it takes until itll breed
+	Fertility int       // Stores the counter until it can breed
+	Dead      bool      // Stores whether it just died
+	UsedChan  chan bool // Stores a channel used to stop other threads from accessing it
 }
 
 // @brief					Creates a new struct of type Creature
@@ -25,14 +25,14 @@ type Creature struct {
 // @return 					A pointer towards a newly created struct of type Creature
 func NewCreature(id, x, y, initialEnergy, breedTime int) *Creature {
 	return &Creature{
-		id:        id,
-		x:         x,
-		y:         y,
-		energy:    initialEnergy,
-		breedTime: breedTime,
-		fertility: 0,
-		dead:      false,
-		usedChan:  make(chan bool, 1),
+		Id:        id,
+		X:         x,
+		Y:         y,
+		Energy:    initialEnergy,
+		BreedTime: breedTime,
+		Fertility: 0,
+		Dead:      false,
+		UsedChan:  make(chan bool, 1),
 	}
 }
 
@@ -45,9 +45,9 @@ func NewCreature(id, x, y, initialEnergy, breedTime int) *Creature {
 //@return A pointer towards a newly created struct of type Creature that is of type 0
 func NewCreatureEmpty(x, y int) *Creature {
 	return &Creature{
-		id:       0,
-		x:        x,
-		y:        y,
-		usedChan: make(chan bool, 1),
+		Id:       0,
+		X:        x,
+		Y:        y,
+		UsedChan: make(chan bool, 1),
 	}
 }

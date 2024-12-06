@@ -1,0 +1,4 @@
+1. To view the documentation type godoc -http=:6060 into terminal.
+2. Go to http://localhost:6060/pkg/WatorProject/Wator/
+3. If that doesn't work just type godoc
+4. and go to http://127.0.0.1:6060/pkg/WatorProject/Wator/

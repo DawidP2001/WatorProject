@@ -7,14 +7,14 @@ import (
 
 // This struct contains information about he grid(planet) the game takes place in
 type World struct {
-	width      int
-	height     int
-	grid       [][]*Creature
-	creatures  []*Creature
-	fishBreed  int
-	sharkBreed int
-	starve     int
-	threads    int
+	Width      int           // Stores the width of the world
+	Height     int           // Stores the height of the world
+	Grid       [][]*Creature // Stores the grid the world takes place on, in each is a pointer to a creature object (includes empty tiles)
+	Creatures  []*Creature   // Stores creatures that will be moved each itteration
+	FishBreed  int           // Stores how often fish can breed
+	SharkBreed int           // Stores how often sharks can breed
+	Starve     int           // Stores after how long sharks starve
+	Threads    int           // Stores number of threads used in this program
 }
 
 /**
@@ -34,12 +34,12 @@ func NewWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]
 	width := gridSize[0]
 	height := gridSize[1]
 	w := &World{
-		width:      width,
-		height:     height,
-		fishBreed:  fishBreed,
-		sharkBreed: sharkBreed,
-		starve:     starve,
-		threads:    threads,
+		Width:      width,
+		Height:     height,
+		FishBreed:  fishBreed,
+		SharkBreed: sharkBreed,
+		Starve:     starve,
+		Threads:    threads,
 	}
 	w.FillTheGrid()
 	w.PopulateWorld(numFish, numShark)
@@ -52,29 +52,29 @@ func NewWorld(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]
 * This function is used to initialise the grid for the game with creature object pointers that are used to represent empty water squares
  */
 func (w *World) FillTheGrid() {
-	w.grid = make([][]*Creature, w.width)
-	for i := range w.grid {
-		w.grid[i] = make([]*Creature, w.height)
+	w.Grid = make([][]*Creature, w.Width)
+	for i := range w.Grid {
+		w.Grid[i] = make([]*Creature, w.Height)
 	}
-	for i := 0; i < w.width; i++ {
-		for j := 0; j < w.height; j++ {
-			w.grid[i][j] = NewCreatureEmpty(i, j)
+	for i := 0; i < w.Width; i++ {
+		for j := 0; j < w.Height; j++ {
+			w.Grid[i][j] = NewCreatureEmpty(i, j)
 		}
 	}
 }
 func (w *World) InitSpawnCreature(creatureId, x, y int) {
 	var breedTime int
 	if creatureId == 1 {
-		breedTime = w.fishBreed
+		breedTime = w.FishBreed
 	} else if creatureId == 2 {
-		breedTime = w.sharkBreed
+		breedTime = w.SharkBreed
 	}
 	creature := NewCreature(
 		creatureId, x, y,
-		w.starve,
+		w.Starve,
 		breedTime)
-	w.creatures = append(w.creatures, creature)
-	w.grid[x][y] = creature
+	w.Creatures = append(w.Creatures, creature)
+	w.Grid[x][y] = creature
 }
 
 /**
@@ -89,17 +89,17 @@ func (w *World) InitSpawnCreature(creatureId, x, y int) {
 func (w *World) SpawnCreature(creatureId, x, y int, mutex *sync.Mutex) {
 	var breedTime int
 	if creatureId == 1 {
-		breedTime = w.fishBreed
+		breedTime = w.FishBreed
 	} else if creatureId == 2 {
-		breedTime = w.sharkBreed
+		breedTime = w.SharkBreed
 	}
 	creature := NewCreature(
 		creatureId, x, y,
-		w.starve,
+		w.Starve,
 		breedTime)
 	mutex.Lock()
-	w.creatures = append(w.creatures, creature)
-	w.grid[x][y] = creature
+	w.Creatures = append(w.Creatures, creature)
+	w.Grid[x][y] = creature
 	mutex.Unlock()
 }
 
@@ -128,9 +128,9 @@ func (w *World) PlaceCreatures(ncreatures, creatureId int) {
 	for i := 0; i < ncreatures; i++ {
 		finish := false
 		for !finish {
-			randomX := rand.Intn(w.width)
-			randomY := rand.Intn(w.height)
-			if w.grid[randomX][randomY].id == 0 {
+			randomX := rand.Intn(w.Width)
+			randomY := rand.Intn(w.Height)
+			if w.Grid[randomX][randomY].Id == 0 {
 				w.InitSpawnCreature(creatureId, randomX, randomY)
 				finish = true
 			}
@@ -152,10 +152,10 @@ func (w *World) GetNeighbours(x, y int) (neighbours [4]*Creature) {
 	for i, movement := range Movements {
 		directionX := movement[0]
 		directionY := movement[1]
-		newX := (x + directionX + w.width) % w.width
-		newY := (y + directionY + w.height) % w.height
+		newX := (x + directionX + w.Width) % w.Width
+		newY := (y + directionY + w.Height) % w.Height
 
-		neighbours[i] = w.grid[newX][newY]
+		neighbours[i] = w.Grid[newX][newY]
 	}
 	return neighbours
 }
@@ -172,7 +172,7 @@ func (w *World) GetNeighbours(x, y int) (neighbours [4]*Creature) {
 func GetFoodNeighbours(neighbours [4]*Creature) []*Creature {
 	var neighbour []*Creature
 	for i := 0; i < len(neighbours); i++ {
-		if neighbours[i].id == 1 {
+		if neighbours[i].Id == 1 {
 			neighbour = append(neighbour, neighbours[i])
 		}
 	}
@@ -196,7 +196,7 @@ func RandomiseNeighbour(neighbours []*Creature) (neighbour *Creature) {
 Loop:
 	for i := 0; i < len(neighbours); i++ {
 		select {
-		case neighbours[start].usedChan <- true:
+		case neighbours[start].UsedChan <- true:
 			neighbour = neighbours[start]
 			break Loop
 		default:
@@ -218,7 +218,7 @@ Loop:
  */
 func GetEmptyNeighbours(neighbours [4]*Creature) (emptyNeighbours []*Creature) {
 	for i := 0; i < len(neighbours); i++ {
-		if neighbours[i].id == 0 {
+		if neighbours[i].Id == 0 {
 			emptyNeighbours = append(emptyNeighbours, neighbours[i])
 		}
 	}
@@ -237,23 +237,23 @@ func GetEmptyNeighbours(neighbours [4]*Creature) (emptyNeighbours []*Creature) {
 * @param 	wg 			A weight group synchronisation tool
  */
 func (w *World) IterateCreatures(creature *Creature, mutex *sync.Mutex, wg *sync.WaitGroup) {
-	neighbours := w.GetNeighbours(creature.x, creature.y)             // Gets 4 nearby grid neighbours
-	if !creature.dead && creature == w.grid[creature.x][creature.y] { // If creature dead or no longer on grid just skip this function
+	neighbours := w.GetNeighbours(creature.X, creature.Y)             // Gets 4 nearby grid neighbours
+	if !creature.Dead && creature == w.Grid[creature.X][creature.Y] { // If creature dead or no longer on grid just skip this function
 		select {
-		case creature.usedChan <- true: // If creature is free
-			creature.fertility += 1 // Plus 1 chronon towards breeding timer
+		case creature.UsedChan <- true: // If creature is free
+			creature.Fertility += 1 // Plus 1 chronon towards breeding timer
 			moved := false
-			x := creature.x
-			y := creature.y
+			x := creature.X
+			y := creature.Y
 			var neighbour *Creature
-			if creature.id == 2 {
+			if creature.Id == 2 {
 				foodNeighbours := GetFoodNeighbours(neighbours) // Checks if shark can eat
 				if len(foodNeighbours) != 0 {
 					neighbour = RandomiseNeighbour(foodNeighbours)
 					if neighbour != nil {
 						// Eat Fish below
-						creature.energy = w.starve
-						w.grid[neighbour.x][neighbour.y].dead = true
+						creature.Energy = w.Starve
+						w.Grid[neighbour.X][neighbour.Y].Dead = true
 						moved = true
 					}
 				}
@@ -262,8 +262,8 @@ func (w *World) IterateCreatures(creature *Creature, mutex *sync.Mutex, wg *sync
 				emptyNeighbours := GetEmptyNeighbours(neighbours)
 				if len(emptyNeighbours) != 0 {
 					neighbour = RandomiseNeighbour(emptyNeighbours)
-					if creature.id == 2 {
-						creature.energy--
+					if creature.Id == 2 {
+						creature.Energy--
 					}
 					if neighbour != nil {
 						moved = true
@@ -271,26 +271,26 @@ func (w *World) IterateCreatures(creature *Creature, mutex *sync.Mutex, wg *sync
 				}
 			}
 			// Checks if sharks going to starve
-			if creature.energy < 0 {
-				creature.dead = true
-				w.grid[x][y] = NewCreatureEmpty(x, y)
+			if creature.Energy < 0 {
+				creature.Dead = true
+				w.Grid[x][y] = NewCreatureEmpty(x, y)
 				if neighbour != nil {
-					<-neighbour.usedChan // Shark dies so free neighbour
+					<-neighbour.UsedChan // Shark dies so free neighbour
 				}
 			} else if moved {
-				creature.x = neighbour.x
-				creature.y = neighbour.y
-				w.grid[neighbour.x][neighbour.y] = creature
+				creature.X = neighbour.X
+				creature.Y = neighbour.Y
+				w.Grid[neighbour.X][neighbour.Y] = creature
 				// Check if creature can breed
-				if creature.fertility >= creature.breedTime {
-					creature.fertility = 0
-					w.SpawnCreature(creature.id, x, y, mutex)
+				if creature.Fertility >= creature.BreedTime {
+					creature.Fertility = 0
+					w.SpawnCreature(creature.Id, x, y, mutex)
 				} else {
-					w.grid[x][y] = NewCreatureEmpty(x, y)
+					w.Grid[x][y] = NewCreatureEmpty(x, y)
 				}
-				<-neighbour.usedChan
+				<-neighbour.UsedChan
 			}
-			<-creature.usedChan
+			<-creature.UsedChan
 		default:
 		}
 	}
@@ -308,16 +308,16 @@ func (w *World) IterateCreatures(creature *Creature, mutex *sync.Mutex, wg *sync
  */
 func (w *World) IterateProgram() {
 	// Shuffles the creature slice
-	rand.Shuffle(len(w.creatures),
-		func(i, j int) { w.creatures[i], w.creatures[j] = w.creatures[j], w.creatures[i] })
+	rand.Shuffle(len(w.Creatures),
+		func(i, j int) { w.Creatures[i], w.Creatures[j] = w.Creatures[j], w.Creatures[i] })
 
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	// Since creatures slice grows during execution I needed a way to keep track the max for this itteration
-	ncreatures := len(w.creatures)
+	ncreatures := len(w.Creatures)
 	for i := 0; i < ncreatures; i++ {
-		creature := w.creatures[i]
-		if creature.dead {
+		creature := w.Creatures[i]
+		if creature.Dead {
 			continue
 		}
 		wg.Add(1)
@@ -325,10 +325,10 @@ func (w *World) IterateProgram() {
 	}
 	wg.Wait()
 	var newCreatures []*Creature
-	for i := 0; i < len(w.creatures); i++ {
-		if !w.creatures[i].dead {
-			newCreatures = append(newCreatures, w.creatures[i])
+	for i := 0; i < len(w.Creatures); i++ {
+		if !w.Creatures[i].Dead {
+			newCreatures = append(newCreatures, w.Creatures[i])
 		}
 	}
-	w.creatures = newCreatures
+	w.Creatures = newCreatures
 }
