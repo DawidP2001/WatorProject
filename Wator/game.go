@@ -10,6 +10,7 @@ import (
 type Game struct {
 	world   *World
 	chronon int
+	//startTime time.Time used to test execution time
 }
 
 // @brief 				Creates a new struct of type Game
@@ -29,6 +30,7 @@ func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]i
 	return &Game{
 		world:   w,
 		chronon: 0,
+		//startTime: time.Now(), used to test execution time
 	}
 }
 
@@ -39,6 +41,13 @@ func NewGame(numShark, numFish, fishBreed, sharkBreed, starve int, gridSize [2]i
 // @return 				Returns a nil error
 func (g *Game) Update() error {
 	g.chronon++
+	/* This commented out section was used to test execution time
+	if g.chronon == 1000 {
+		elapsed := time.Since(g.startTime)
+		print(elapsed.String())
+		os.Exit(0)
+	}
+	*/
 	g.world.IterateProgram()
 	return nil
 }
