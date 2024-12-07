@@ -22,5 +22,5 @@
     iv.   Creatures.go   - Contains the struct for the creatures present in the world
     v.    Game.go        - Contains logic for updating the world as well as drawing it 
 7. To View Documentation: 
-    i.  To view the documentation type godoc into terminal.
+    i.  To view the documentation type godoc into terminal while in the WatorProject directory
     ii. Go to either http://127.0.0.1:6060/pkg/WatorProject/Wator/ or http://localhost:6060/pkg/WatorProject/Wator/ 
