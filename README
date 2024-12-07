@@ -7,7 +7,7 @@
     iv.  Run "go run main.go"
 4. To View the documentation:
     i. Simply type godoc in the terminal for the directory for this project
-    ii. Go to http://localhost:6060/
+    ii. Go to http://localhost:6060/ or http://127.0.0.1:6060/pkg/WatorProject/Wator/
 5. List of required Libraries in golang:
     i.      log
     ii.     github.com/hajimehoshi/ebiten/v2
@@ -21,6 +21,3 @@
     iii.  Constants.go   - Contains some constants used by the program
     iv.   Creatures.go   - Contains the struct for the creatures present in the world
     v.    Game.go        - Contains logic for updating the world as well as drawing it 
-7. To View Documentation: 
-    i.  To view the documentation type godoc into terminal while in the WatorProject directory
-    ii. Go to either http://127.0.0.1:6060/pkg/WatorProject/Wator/ or http://localhost:6060/pkg/WatorProject/Wator/ 
